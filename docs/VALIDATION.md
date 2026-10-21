@@ -4,6 +4,16 @@ Date: 2026-10-21.
 
 ## Software checks
 
+### Three researched control layouts, version 1.4.0, 2026-10-22
+
+The research and tradeoffs are documented in UX_RESEARCH.md with primary sources from Apple, Hue, LIFX and Nanoleaf. The three alternatives are working app layouts, not static mockups. They share the existing controller and Bluetooth session. A separate validated layout preference leaves stored lighting preferences unchanged.
+
+All 87 automated tests pass. The new tests cover cardinal wheel colours, saturation distance and clamping, centre hue retention, marker/touch round trips, dimmer bounds with a 1% floor, valid comparison-link precedence, preference round trips and corrupt/blocked layout storage. The Windows production build passes.
+
+Shared-browser checks with a simulated peripheral show one chooser and zero writes on Connect and repeated layout changes. A dimmer tap and keyboard increment each submit one colour/brightness command. Off followed by colour and brightness edits submits only Off; explicit On submits the latest full unscaled RGB/brightness frame. Wheel taps, wheel keyboard edits and palette selections submit through the same session. A synthetic wheel drag with simulated pointer capture submits zero commands during draft, on cancellation or subsequent blur. This verifies application handlers, not a phone's touch or BLE delivery.
+
+Main-screen screenshots for all three layouts were reviewed at 390 by 844. On/Off end at approximately 713, 705 and 732 pixels for Wheel, Palette and Dimmer with a saved favourite present; saved content below may scroll. At 320 by 640, all three have no horizontal overflow and tested buttons and sliders have at least 44-pixel hit regions. The layout sheet initially focuses its heading, preserves a plain X, shows keyboard focus on Tab, closes on Escape and returns focus to the layout action. Preference restoration keeps the strip disconnected and submits nothing. Actual iPhone/Bluefy usability and physical strip outcomes remain owner checks.
+
 ### Restrained interface revision, version 1.3.0, 2026-10-22
 
 Replaced the rainbow pad with separate native hue and saturation sliders and a flat selected-colour preview. The page uses neutral charcoal, smaller consistent numeric values, quiet swatches and text actions. Power actions sit below presets. No enclosing cards, bottom navigation or Apply were added. The persistent Bluetooth service, protocol, scheduler and storage format are unchanged.

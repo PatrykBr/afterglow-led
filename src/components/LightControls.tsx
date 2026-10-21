@@ -4,26 +4,6 @@ import { hex, fromHex, hsvToRgb, rgbToHsv, validateSettings, PRESETS, type Setti
 import { Icon } from './Icon';
 
 type ColourProps = { app: LightingController; settings: Settings; hue: number; onHueChange: (value: number) => void };
-export function ColourControls({ app, settings, hue, onHueChange }: ColourProps) {
-  const [, saturation] = rgbToHsv(settings.rgb);
-  const draft = (h: number, s: number) => {
-    onHueChange(h);
-    app.select({ ...app.getSnapshot().preferences.selected, rgb: hsvToRgb(h, s) }, false);
-  };
-  return <>
-    <div className="colour-adjustment hue-adjustment">
-      <label htmlFor="main-hue">Hue</label>
-      <Range id="main-hue" label="Hue" max={359} value={Math.min(359, Math.round(hue))} onDraft={value => draft(value, saturation)} onCommit={() => app.commit()}
-        style={{ '--track': 'linear-gradient(to right,#ff5656,#f5d45b,#79d582,#69ced5,#8290f2,#d179d4,#ff5656)', '--thumb': hex(hsvToRgb(hue, 1)) } as CSSProperties} />
-    </div>
-    <div className="colour-adjustment saturation-adjustment">
-      <div className="section-heading"><label htmlFor="main-saturation">Saturation</label><output htmlFor="main-saturation">{Math.round(saturation * 100)}<span>%</span></output></div>
-      <Range id="main-saturation" label="Saturation" value={Math.round(saturation * 100)} onDraft={value => draft(hue, value / 100)} onCommit={() => app.commit()}
-        style={{ '--track': `linear-gradient(to right,#efeeeb,${hex(hsvToRgb(hue, 1))})` } as CSSProperties} />
-    </div>
-  </>;
-}
-
 function Range({ id, label, value, min = 0, max = 100, onDraft, onCommit, style }: { id: string; label: string; value: number; min?: number; max?: number; onDraft: (value: number) => void; onCommit: () => void; style?: CSSProperties }) {
   const dirty = useRef(false);
   const commit = () => { if (dirty.current) { dirty.current = false; onCommit(); } };
@@ -37,13 +17,17 @@ export function Brightness({ app, settings }: { app: LightingController; setting
   return <section className="brightness-section" aria-labelledby="brightness-title">
     <div className="section-heading"><h2 id="brightness-title"><label htmlFor="brightness">Brightness</label></h2><output htmlFor="brightness">{settings.brightness}<span>%</span></output></div>
     <Range id="brightness" label="Brightness" min={1} value={settings.brightness} onDraft={brightness => app.select({ ...settings, brightness }, false)} onCommit={() => app.commit()} style={{ '--fill': `${settings.brightness}%` } as CSSProperties} />
-    <div className="quick-levels" aria-label="Quick brightness levels">{[10, 25, 50, 100].map(level => <button key={level} aria-pressed={settings.brightness === level} onClick={() => app.select({ ...settings, brightness: level })}>{level}%</button>)}</div>
+    <QuickLevels app={app} settings={settings} />
   </section>;
 }
 
-export function Presets({ app, settings, onSave, onSaved }: { app: LightingController; settings: Settings; onSave: () => void; onSaved: () => void }) {
+export function QuickLevels({ app, settings }: { app: LightingController; settings: Settings }) {
+  return <div className="quick-levels" aria-label="Quick brightness levels">{[10, 25, 50, 100].map(level => <button key={level} aria-pressed={settings.brightness === level} onClick={() => app.select({ ...settings, brightness: level })}>{level}%</button>)}</div>;
+}
+
+export function Presets({ app, settings, onCustom }: { app: LightingController; settings: Settings; onCustom?: () => void }) {
   return <section className="presets" aria-labelledby="presets-title">
-    <div className="section-heading"><h2 id="presets-title">Presets</h2><div className="preset-actions"><button className="text-button" aria-label="Saved lights" onClick={onSaved}>Saved</button><button className="text-button" aria-label="Save this light" onClick={onSave}><Icon name="plus" size={14} />Save</button></div></div>
+    <div className="section-heading"><h2 id="presets-title">Quick colours</h2>{onCustom && <button className="text-button" onClick={onCustom}>Edit colour<Icon name="sliders" size={16} /></button>}</div>
     <div className="preset-grid">{PRESETS.map(preset => <button key={preset.name} className="preset" aria-pressed={hex(preset.rgb) === hex(settings.rgb)} onClick={() => app.select({ ...settings, rgb: preset.rgb })}>
       <span style={{ '--swatch': hex(preset.rgb) } as CSSProperties} /><span>{preset.name === 'Soft white' ? 'Warm' : preset.name}</span>
     </button>)}</div>

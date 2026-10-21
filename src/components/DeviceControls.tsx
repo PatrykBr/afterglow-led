@@ -17,7 +17,7 @@ export function DeviceHeader({ app, state, onDetails, onOptions }: { app: Lighti
 export function PowerControls({ app, state }: { app: LightingController; state: ControllerSnapshot }) {
   const connected = state.session.state === 'connected';
   return <section className="power-controls" aria-label="Power controls">
-    <h2>Power</h2>
+    <div className="power-heading"><h2>Power</h2><small>{state.requestedPower === 'unknown' ? 'No request this visit' : `Last request: ${state.requestedPower === 'on' ? 'On' : 'Off'}`}</small></div>
     <div className="power-buttons"><button disabled={!connected} className={state.requestedPower === 'on' ? 'requested' : ''} aria-label="Turn on" onClick={() => app.power('on')}>On</button><button disabled={!connected} className={state.requestedPower === 'off' ? 'requested' : ''} aria-label="Turn off" onClick={() => app.power('off')}>Off</button></div>
   </section>;
 }

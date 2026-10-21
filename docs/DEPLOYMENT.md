@@ -14,6 +14,8 @@ The fresh hosted source repository is `https://git.chatgpt-team.site/77e8427c-4b
 
 ## Publish an update from Windows
 
+Version 1.4.0 adds three working layouts informed by research into Apple Home, Hue, LIFX and Nanoleaf. Open `https://afterglow-led.gardenmelon35.chatgpt.site/?v=1.4.0&layout=wheel`, `...?v=1.4.0&layout=palette` or `...?v=1.4.0&layout=dimmer`. The in-app layout chooser switches without reloading or changing the lights. Direct links reload the page and may require Bluetooth selection again. All layouts use this same public HTTPS origin, local lighting preferences and session implementation.
+
 Version 1.3.0 replaces the broad rainbow pad and blue ambient background with charcoal, a selected-colour disc, slim hue/saturation controls and quieter typography. Open `https://afterglow-led.gardenmelon35.chatgpt.site/?v=1.3.0` in Bluefy. This keeps the same origin, saved preferences, session service and BLE packets.
 
 Version 1.2.1 removes the enclosing panel and nested control surrounds, adds downward swipe dismissal and removes automatic close-button focus and its circular decoration. Open `https://afterglow-led.gardenmelon35.chatgpt.site/?v=1.2.1` in Bluefy to load this revision. Preferences remain on the same origin.

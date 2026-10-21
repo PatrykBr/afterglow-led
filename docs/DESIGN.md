@@ -1,4 +1,8 @@
-# Design direction, version 1.3
+# Design direction, version 1.4
+
+The owner asked for more options and research into established lighting apps. The current plan and sources are in [UX_RESEARCH.md](UX_RESEARCH.md). Three layouts change the primary interaction: a direct colour wheel, a named palette on a light surface, and a large dimmer. Shared brightness, power and saved actions use the same controller. The noninteractive colour disc and equal-weight main hue/saturation sliders are removed. A visible layout chooser allows comparison within the active session. These are alternatives for owner evaluation, not a claim of measured usability superiority.
+
+## Previous direction, version 1.3
 
 The owner rejected the enclosing containers and the latest visual treatment as tacky. Keep the app structure and Bluetooth behavior, but replace the broad rainbow panel, blue ambient gradients, shiny swatches and repeated icon bubbles with a quiet lighting remote.
 

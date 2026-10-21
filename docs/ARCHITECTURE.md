@@ -6,6 +6,8 @@
 
 The connection states are disconnected, connecting, connected and disconnecting. Queue depth is separate. Permission selection has no artificial deadline while the owner is choosing a device. Connection and discovery have a 15-second deadline after selection. Reconnect retains the browser device object when available and discovers new GATT objects. Connect and reconnect never replay lighting intent.
 
+Service and characteristic identities are compared after UUID normalization. Equivalent 16-bit, zero-padded 32-bit and full 128-bit forms resolve to the same Bluetooth identity. This accommodates native browser bridges without changing the requested EEA0 service or EE01 characteristic. Wrong identities, malformed UUIDs and missing write-without-response capability still fail closed. Diagnostics record the reported and normalized service and characteristic UUIDs.
+
 ## Intent and delivery
 
 Selected RGB and brightness, requested power, last submitted settings and connection state are separate. Only selection and favourites are persisted. Requested power starts unknown on every page load because it is not a device reading. While Off is requested, all colour interactions prepare settings locally. On explicitly includes the current selection. Apply after Off is labelled Turn on & apply.

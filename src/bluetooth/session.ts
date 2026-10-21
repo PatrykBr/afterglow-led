@@ -2,6 +2,7 @@ import { CHARACTERISTIC, SERVICE, type Command } from '../protocol/bojia';
 import { bounded, CancelledError, delay } from './async';
 import { CommandScheduler, type Outcome } from './scheduler';
 import type { Diagnostics } from '../diagnostics';
+import { canonicalBluetoothUuid } from './uuid';
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'disconnecting';
 export type SessionSnapshot = { state: ConnectionState; hasDevice: boolean; deviceName?: string; pending: number; error?: string };
@@ -79,10 +80,14 @@ export class BluetoothSession {
     }
     const service = await server.getPrimaryService(SERVICE);
     if (generation !== this.generation) throw new CancelledError();
-    if (service.uuid.toLowerCase() !== SERVICE) throw new Error('The selected device does not expose the verified LED service.');
+    const serviceUuid = canonicalBluetoothUuid(service.uuid);
+    this.diagnostics.add('service-discovered', JSON.stringify({ reported: service.uuid, canonical: serviceUuid ?? null }));
+    if (serviceUuid !== SERVICE) throw new Error('The selected device does not expose the verified LED service. Copy diagnostics for troubleshooting.');
     const characteristic = await service.getCharacteristic(CHARACTERISTIC);
     if (generation !== this.generation) throw new CancelledError();
-    if (characteristic.uuid.toLowerCase() !== CHARACTERISTIC || !characteristic.properties.writeWithoutResponse || typeof characteristic.writeValueWithoutResponse !== 'function') {
+    const characteristicUuid = canonicalBluetoothUuid(characteristic.uuid);
+    this.diagnostics.add('characteristic-discovered', JSON.stringify({ reported: characteristic.uuid, canonical: characteristicUuid ?? null, writeWithoutResponse: characteristic.properties.writeWithoutResponse }));
+    if (characteristicUuid !== CHARACTERISTIC || !characteristic.properties.writeWithoutResponse || typeof characteristic.writeValueWithoutResponse !== 'function') {
       throw new Error('This controller does not provide the verified LED write channel. Choose BJ_LED_M.');
     }
     return characteristic;

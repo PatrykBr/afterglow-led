@@ -16,6 +16,12 @@ Production publication succeeded. The public HTTPS root returned HTTP 200 withou
 
 ## Physical acceptance still required
 
+### Connection error report and version 1.0.1
+
+The owner reported "The selected device does not expose the verified LED service." That error occurs after the service lookup returns. A simulated service reporting `EEA0` instead of its equivalent full 128-bit UUID reproduced the exact message in the real session code. The original comparison accepted only the full textual form. The phone's raw returned UUID was not captured, so short UUID formatting remains the likely explanation for the physical report, not a measured phone result.
+
+Version 1.0.1 normalizes equivalent UUID representations for both EEA0 and EE01 and records the returned identities in diagnostics. The suite now passes 58 tests, including short, zero-padded, mixed-case and compact full UUIDs, rejection of different services and EE02, and exported discovery details. The Windows production build passes. The QA browser also connects to a simulated peripheral returning short `EEA0` / `EE01`, sends nothing on connect, and submits a colour frame only after Apply selection. Retry on the actual phone is pending.
+
 No new physical results have been recorded for this app. The owner's earlier successful colour tests are research background, not new acceptance evidence.
 
 - [ ] Open the deployed production URL in Bluefy on the actual iPhone.

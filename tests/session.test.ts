@@ -8,6 +8,44 @@ beforeEach(() => { vi.useFakeTimers(); });
 afterEach(() => { vi.useRealTimers(); });
 
 describe('session and command lifecycle', () => {
+  it.each([
+    ['eea0', 'ee01'],
+    ['EEA0', 'EE01'],
+    ['0000EEA0', '0000EE01'],
+    ['0xEEA0', '0xEE01'],
+    ['0000EEA000001000800000805F9B34FB', '0000EE0100001000800000805F9B34FB'],
+    [SERVICE.toUpperCase(), CHARACTERISTIC.toUpperCase()],
+  ])('accepts equivalent Bluetooth UUID forms %s / %s', async (serviceUuid, characteristicUuid) => {
+    const p = peripheral();
+    p.service.uuid = serviceUuid;
+    p.characteristic.uuid = characteristicUuid;
+    await p.session.connect();
+    expect(p.session.getSnapshot().error).toBeUndefined();
+    expect(p.session.getSnapshot().state).toBe('connected');
+    expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
+  });
+  it.each(['ee02', 'eea0ffff', '0000eea0-0000-1000-8000-00805f9b34fc', '', 'not-a-uuid'])('still rejects the wrong or invalid service %s', async uuid => {
+    const p = peripheral();
+    p.service.uuid = uuid;
+    await p.session.connect();
+    expect(p.session.getSnapshot().state).toBe('disconnected');
+    expect(p.session.getSnapshot().error).toContain('does not expose the verified LED service');
+    expect(p.service.getCharacteristic).not.toHaveBeenCalled();
+    expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
+  });
+  it('still rejects EE02 even when the service is reported as a short UUID', async () => {
+    const p = peripheral(); p.service.uuid = 'EEA0'; p.characteristic.uuid = 'EE02';
+    await p.session.connect();
+    expect(p.session.getSnapshot().error).toContain('verified LED write channel');
+    expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
+  });
+  it('records the bridge UUIDs in exported diagnostics', async () => {
+    const p = peripheral(); p.service.uuid = 'EEA0'; p.characteristic.uuid = 'EE01';
+    await p.session.connect();
+    const entries = JSON.parse(p.diagnostics.export()).entries;
+    expect(entries).toContainEqual(expect.objectContaining({ event: 'service-discovered', detail: JSON.stringify({ reported: 'EEA0', canonical: SERVICE }) }));
+    expect(entries).toContainEqual(expect.objectContaining({ event: 'characteristic-discovered', detail: JSON.stringify({ reported: 'EE01', canonical: CHARACTERISTIC, writeWithoutResponse: true }) }));
+  });
   it('filters by name, grants optional service, discovers EE01 and sends nothing on connect', async () => {
     const p = peripheral();
     await p.session.connect();

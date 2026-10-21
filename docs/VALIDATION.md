@@ -4,6 +4,14 @@ Date: 2026-10-21.
 
 ## Software checks
 
+### Restrained interface revision, version 1.3.0, 2026-10-22
+
+Replaced the rainbow pad with separate native hue and saturation sliders and a flat selected-colour preview. The page uses neutral charcoal, smaller consistent numeric values, quiet swatches and text actions. Power actions sit below presets. No enclosing cards, bottom navigation or Apply were added. The persistent Bluetooth service, protocol, scheduler and storage format are unchanged.
+
+All 67 automated tests pass. The Windows production build succeeds. The shared browser's screenshot capture now works; main-screen and Options screenshots were reviewed at phone widths. At 390 by 844 the normal screen fits, and at 320 by 640 the page scrolls without horizontal overflow. Tested button and slider hit regions meet 44 by 44 pixels. Sheets retain their plain X, heading focus, swipe dismissal and focus return.
+
+With a simulated peripheral, Connect sends zero writes and creates one selection request. Hue and saturation edits submit on release; one keyboard step followed by a separate slider click produces one write per action, without a blur duplicate. Off submits its exact five-byte frame. Subsequent hue and brightness changes submit nothing while Off is requested. On submits the latest selected unscaled RGB and brightness scalar in the full nine-byte frame. Sheet opening and swipe dismissal add no commands or chooser. These results are software checks; Bluefy touch feel and physical LED output remain owner checks.
+
 ### Open layout and sheet fixes, version 1.2.1, 2026-10-22
 
 Removed the enclosing main glass panel and decorative pill surrounds. The X is now a plain icon with a 44-pixel target. Sheets initially focus their heading and restore focus to their opener; Tab still gives the close button a visible focus outline. A downward touch drag of at least 72 pixels dismisses from the header or noninteractive content at scroll top. Short, horizontal, upward, cancelled and multiple-touch gestures do not dismiss. Fields, sliders, buttons, links and already-scrolled content keep their own interactions.

@@ -1,4 +1,35 @@
-# Design direction, version 1.2.1
+# Design direction, version 1.3
+
+The owner rejected the enclosing containers and the latest visual treatment as tacky. Keep the app structure and Bluetooth behavior, but replace the broad rainbow panel, blue ambient gradients, shiny swatches and repeated icon bubbles with a quiet lighting remote.
+
+Tokens: graphite #19191b for the page, smoked glass #29292c for sheets, pearl #f1f0ed for primary text and active controls, silver #aaa9ad for secondary text, subtle edge #ffffff14 and soft error #f1b9be. The selected colour appears in its preview and functional tracks. There is no decorative page gradient.
+
+Type: iPhone system typography with Segoe UI on Windows. A 23-pixel medium-weight brand, 16-pixel section headings, 13 to 15-pixel labels and matching tabular slider values. No oversized numbers or multicolour brand text.
+
+Layout: brand/options row, connection row, selected-colour preview and exact-colour access, hue and saturation, brightness, named presets, then explicit power actions within thumb reach. Left-aligned labels and right-aligned values share one edge. Controls sit on the page, separated by space. The flat 88-pixel colour disc is the single visual focal point and represents the selection, not measured device output. It grows to 120 pixels on desktop.
+
+```text
+Afterglow                              …
+Not connected                    Connect
+
+            selected colour
+Colour                           #FF8E5C
+Hue                            spectrum
+Saturation                           64%
+
+Brightness                           50%
+10%          25%          50%        100%
+
+Presets                  Saved     Save
+Ember   Rose   Lilac   Ocean   Mint   Warm
+
+Power                         On    Off
+feedback
+```
+
+Review: a glowing orb, glossy rainbow wheel or decorative dashboard would repeat the excess the owner rejected. Use a flat colour disc, thin functional tracks and quiet swatches. Limit glass to actual touch surfaces and temporary sheets. Keep plain X buttons, swipe dismissal, keyboard focus and 44-pixel targets. No Apply, enclosing card, bottom bar or new Bluetooth ownership. Colour, saturation and brightness submit on release; Off holds edits for the next On.
+
+## Previous direction, version 1.2.1
 
 Afterglow is one lighting remote screen. The owner requested removal of Apply and bottom navigation, with an iOS 26 inspired glass appearance. Controls continue sending on release. Connection never sends a command. After connecting, adjust a control or tap On to use the prepared setting. Off continues holding colour edits for the next On request.
 

@@ -14,6 +14,8 @@ The fresh hosted source repository is `https://git.chatgpt-team.site/77e8427c-4b
 
 ## Publish an update from Windows
 
+Version 1.3.0 replaces the broad rainbow pad and blue ambient background with charcoal, a selected-colour disc, slim hue/saturation controls and quieter typography. Open `https://afterglow-led.gardenmelon35.chatgpt.site/?v=1.3.0` in Bluefy. This keeps the same origin, saved preferences, session service and BLE packets.
+
 Version 1.2.1 removes the enclosing panel and nested control surrounds, adds downward swipe dismissal and removes automatic close-button focus and its circular decoration. Open `https://afterglow-led.gardenmelon35.chatgpt.site/?v=1.2.1` in Bluefy to load this revision. Preferences remain on the same origin.
 
 Version 1.2.0 removes Apply and bottom navigation, adds the glass styling, and keeps saved lights and options in sheets. The entry URL `https://afterglow-led.gardenmelon35.chatgpt.site/?v=1.2.0` uses the same storage origin and favourites as earlier versions.

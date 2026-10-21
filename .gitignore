@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.tgz
+*.tar.gz
+.env*
+!.env.example
+.sites/
+.DS_Store
+coverage/

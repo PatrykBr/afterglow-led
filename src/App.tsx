@@ -1,44 +1,60 @@
-import { useState, useSyncExternalStore } from 'react';
+import { useState, useSyncExternalStore, type CSSProperties } from 'react';
 import { controller } from './app-service';
 import { hex, rgbToHsv } from './domain/lighting';
-import { Connection, Power } from './components/Connection';
-import { ColourDial, ExactColour, LightSliders, Presets } from './components/ColourControls';
-import { Favourites } from './components/Favourites';
+import type { Favourite } from './persistence/preferences';
+import { DeviceHeader, DeviceDetails, PowerControls } from './components/DeviceControls';
+import { Brightness, ColourPad, ExactColour, Presets } from './components/LightControls';
+import { FavouriteEditor, SavedLights } from './components/SavedLights';
+import { MoreView } from './components/MoreView';
+import { Sheet } from './components/Sheet';
 import { Icon } from './components/Icon';
+
+type View = 'light' | 'saved' | 'more';
+type Modal = { kind: 'device' | 'colour' } | { kind: 'favourite'; favourite?: Favourite } | null;
+
+function shortFeedback(message: string) {
+  if (message.startsWith('Your light,') || message.startsWith('Setting saved here.')) return 'Connect to send your selection.';
+  if (message.startsWith('Ready for next time.')) return 'Ready for next On. Colour changes are held.';
+  if (message.startsWith('Off command sent.')) return 'Off command sent. Edits prepare your next On.';
+  if (message.startsWith('On command sent with')) return 'On command sent.';
+  if (message.startsWith('Sending your command')) return 'Sending…';
+  return message;
+}
 
 export default function App() {
   const state = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const { selected, favourites } = state.preferences;
+  const [view, setView] = useState<View>('light');
+  const [modal, setModal] = useState<Modal>(null);
   const [rememberedHue, setRememberedHue] = useState(0);
   const [rgbHue, saturation] = rgbToHsv(selected.rgb);
   const hue = saturation === 0 ? rememberedHue : rgbHue;
-  const [diagnosticText, setDiagnosticText] = useState('');
-  const [copied, setCopied] = useState(false);
-  const connected = state.session.state === 'connected';
-  async function copyDiagnostics() {
-    const data = controller.diagnostics.export();
-    setDiagnosticText(data);
-    try { await navigator.clipboard.writeText(data); setCopied(true); }
-    catch { setCopied(false); }
-  }
-  return <div className="app-shell">
-    <header className="app-header"><a href="#main" className="brand" aria-label="Afterglow home"><span className="brand-mark"><span /></span>afterglow<span className="brand-stop">.</span></a><span className="header-note">A little light, just for you.</span></header>
+  const colourProps = { app: controller, settings: selected, hue, onHueChange: setRememberedHue };
+  const dismiss = () => setModal(null);
+  const changeView = (next: View) => { setView(next); window.scrollTo({ top: 0, behavior: 'auto' }); };
+  return <div className="app-shell" style={{ '--selection': hex(selected.rgb) } as CSSProperties}>
+    <DeviceHeader app={controller} state={state} onDetails={() => setModal({ kind: 'device' })} />
+    {state.session.error && <p role="alert" className="error connection-error">{state.session.error}</p>}
+    {state.storageWarning && <p role="alert" className="error">{state.storageWarning}</p>}
     <main id="main">
-      <Connection app={controller} state={state} />
-      <Power app={controller} state={state} />
-      {state.storageWarning && <p role="alert" className="storage-warning">{state.storageWarning}</p>}
-      <div className="control-panel">
-        <ColourDial app={controller} settings={selected} hue={hue} onHueChange={setRememberedHue} />
-        <div className="control-side"><LightSliders app={controller} settings={selected} hue={hue} onHueChange={setRememberedHue} /><Presets app={controller} settings={selected} /></div>
-      </div>
-      <ExactColour key={hex(selected.rgb)} app={controller} settings={selected} />
-      <Favourites app={controller} favourites={favourites} />
-      <details className="help"><summary>Using Afterglow on your iPhone</summary><div className="help-content"><p>Open this page in Bluefy, with Bluetooth enabled. Keep your strip powered and nearby. Tap Connect and choose BJ_LED_M. Connecting leaves the lights unchanged.</p><p>Tap Apply selection to send your saved colour. After that, colour controls send on release. After Turn off, edits prepare your next On setting. Tap Turn on to send it.</p><p>Bookmark this page using Bluefy's bookmark menu. A reload or new session may require you to select the device again. Reconnect reuses the selected device when available and never replays a lighting command.</p><p>Keep this page open for control. When disconnecting, wait for "Not connected" before closing the page. Backgrounding or closing the browser can interrupt a Bluetooth session.</p><p>The On and Off packets still need confirmation on your physical strip. Commands are sent without a device acknowledgement, so check the light itself.</p><a href="https://bluefy.app/guide.html" target="_blank" rel="noreferrer">Bluefy connection guide</a></div></details>
-      <details className="help diagnostics"><summary>Diagnostics &amp; troubleshooting</summary><div className="help-content"><p>If connection fails, check Bluefy's Bluetooth permission in iPhone Settings, move closer to the powered strip and close BojiaLed or other connected controllers.</p><p>No device state is read. After a timeout, check the strip, reconnect, then send the setting you want. There are no automatic write retries.</p><p>Verified channel: EEA0 / EE01. Write spacing: 80 ms. Normal disconnect hold: 3 seconds.</p>{state.lastSubmitted && <p>Last submitted selection: {hex(state.lastSubmitted.rgb)} at {state.lastSubmitted.brightness}%.</p>}<button className="quiet-button" onClick={() => void copyDiagnostics()}>{copied ? 'Diagnostics copied' : 'Copy diagnostics'}</button>{diagnosticText && <label className="diagnostic-export">{copied ? 'Exported history' : 'Copy this history manually'}<textarea readOnly value={diagnosticText} rows={8} onFocus={event => event.target.select()} /></label>}</div></details>
-      <footer className="page-footer"><span>Made for your corner of the world.</span><span>Afterglow v1.0.1</span></footer>
+      {view === 'light' && <div className="light-view">
+        <PowerControls app={controller} state={state} />
+        <section className="colour-section" aria-labelledby="colour-title">
+          <div className="section-heading"><h2 id="colour-title" tabIndex={-1}>Colour</h2><button className="colour-value" aria-label={`Exact colour, ${hex(selected.rgb)}`} onClick={() => setModal({ kind: 'colour' })}><span style={{ background: hex(selected.rgb) }} />{hex(selected.rgb)}<Icon name="sliders" size={16} /></button></div>
+          <ColourPad {...colourProps} />
+        </section>
+        <Brightness app={controller} settings={selected} />
+        <Presets app={controller} settings={selected} onSave={() => setModal({ kind: 'favourite' })} />
+      </div>}
+      {view === 'saved' && <SavedLights app={controller} favourites={favourites} selected={selected} onEdit={favourite => setModal({ kind: 'favourite', favourite })} onUse={() => { changeView('light'); requestAnimationFrame(() => document.getElementById('colour-title')?.focus()); }} />}
+      {view === 'more' && <MoreView app={controller} state={state} onDevice={() => setModal({ kind: 'device' })} />}
+      <p className="feedback" role="status" aria-live="polite"><span className={`feedback-dot ${state.session.pending ? 'sending' : ''}`} />{state.session.pending ? 'Sending…' : shortFeedback(state.message)}</p>
     </main>
-    <aside className="apply-bar" aria-label="Apply selected lighting">
-      <div className="apply-content"><div className="feedback"><span className={`status-dot ${connected ? 'live' : ''}`} /><p role="status" aria-live="polite">{state.session.pending ? `Sending commands (${state.session.pending})…` : state.message}</p></div><button className="apply-button" disabled={!connected} onClick={() => controller.apply()}><span>{state.requestedPower === 'off' ? 'Turn on & apply' : 'Apply selection'}</span><Icon name="arrow" size={20} /></button></div>
-    </aside>
+    <nav className="bottom-nav" aria-label="Main navigation">{([
+      { id: 'light', label: 'Light', icon: 'sun' }, { id: 'saved', label: 'Saved', icon: 'saved' }, { id: 'more', label: 'More', icon: 'more' },
+    ] as const).map(item => <button key={item.id} aria-current={view === item.id ? 'page' : undefined} onClick={() => changeView(item.id)}><Icon name={item.icon} size={22} /><span>{item.label}</span></button>)}</nav>
+    {modal?.kind === 'device' && <Sheet title="Your strip" onDismiss={dismiss}><DeviceDetails app={controller} state={state} onDone={dismiss} /></Sheet>}
+    {modal?.kind === 'colour' && <Sheet title="Exact colour" onDismiss={dismiss}><ExactColour {...colourProps} onDone={dismiss} /></Sheet>}
+    {modal?.kind === 'favourite' && <Sheet title={modal.favourite ? 'Edit saved light' : 'Save this light'} onDismiss={dismiss}><FavouriteEditor app={controller} favourite={modal.favourite} onDone={dismiss} /></Sheet>}
   </div>;
 }

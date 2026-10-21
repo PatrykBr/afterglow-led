@@ -27,7 +27,9 @@ The production JavaScript target is Safari 15 syntax. Compilation does not suppl
 
 ## iPhone use
 
-See [the short Bluefy guide](docs/IPHONE.md). Open the deployment URL from [the deployment record](docs/DEPLOYMENT.md) in Bluefy. Tap Connect and choose BJ_LED_M. Connect leaves the lights unchanged. Apply selection sends your saved colour. Further committed colour and brightness edits use the active connection.
+See [the short Bluefy guide](docs/IPHONE.md). Open the deployment URL from [the deployment record](docs/DEPLOYMENT.md) in Bluefy. Tap Connect and choose BJ_LED_M. Connect leaves the lights unchanged. Apply sends your saved colour. Further committed colour and brightness edits use the active connection.
+
+Version 1.1 puts the daily controls on Light, saved combinations on Saved, and help and diagnostics on More. Exact colour and device details open in modal sheets. View changes and sheets reuse the same session and never send commands on their own.
 
 On and Off are explicit command requests. The strip does not acknowledge its physical power state. After requesting Off, edits prepare the next On selection. A reload restores settings and favourites, with power treated as unknown; it sends nothing.
 

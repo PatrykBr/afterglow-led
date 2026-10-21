@@ -14,6 +14,8 @@ The fresh hosted source repository is `https://git.chatgpt-team.site/77e8427c-4b
 
 ## Publish an update from Windows
 
+The version 1.1.0 interface revision keeps this same origin and stored settings. It adds Light, Saved and More views without changing Bluetooth packet formats, timing or session ownership. A cache-busting entry URL is `https://afterglow-led.gardenmelon35.chatgpt.site/?v=1.1.0`; this is the same storage origin as the original URL.
+
 1. Open this source repository in Codex with the Sites plugin connected to the owner account.
 2. Run `npm ci` if needed and `npm run check`. The normal Windows commands do not require a Mac.
 3. Ask Sites to publish this existing project, retaining the project ID in `.openai/hosting.json`. The Sites source workflow commits and pushes source, packages the matching `dist` directory with the hosting manifest, then deploys that saved version.

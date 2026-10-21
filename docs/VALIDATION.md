@@ -16,6 +16,14 @@ Production publication succeeded. The public HTTPS root returned HTTP 200 withou
 
 ## Physical acceptance still required
 
+### Mobile interface revision, version 1.1.0
+
+The new Light view uses a wide hue/saturation pad, brightness, quick levels and presets. Saved and More are separate views. Exact colour, device controls and saved-light editing use native dialog sheets. Transport, scheduling, protocol and stored preference formats are unchanged.
+
+All 58 automated tests pass and the Windows production build succeeds. In the shared browser, a mock peripheral returning short EEA0/EE01 UUIDs connects once and sends zero writes during view changes and sheet opening/closing. Apply, Off, prepared edits and On retain the correct command behavior. Saving, renaming and confirmed deletion add no writes. A keyboard brightness change sends exactly once; blurring it to open a sheet adds no duplicate. A colour-pad tap submits one colour write.
+
+At 390 by 844 CSS pixels, presets end at pixel 724 and feedback at 764, above navigation at 777. At 320 pixels wide, no horizontal overflow or button targets below 44 by 44 pixels were found. Smaller viewports may scroll. Native modal focus enters the close control. Screenshot QA was unavailable: two T3 snapshot attempts timed out, the independent HTML capture timed out, and automatic approval review rejected launching a separate headless browser as "blocked by policy". Layout and interaction checks succeeded, but no new screenshot-based visual review is claimed. Actual Bluefy touch and physical LED confirmation remain owner checks.
+
 ### Connection error report and version 1.0.1
 
 The owner reported "The selected device does not expose the verified LED service." That error occurs after the service lookup returns. A simulated service reporting `EEA0` instead of its equivalent full 128-bit UUID reproduced the exact message in the real session code. The original comparison accepted only the full textual form. The phone's raw returned UUID was not captured, so short UUID formatting remains the likely explanation for the physical report, not a measured phone result.

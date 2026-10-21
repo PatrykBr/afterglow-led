@@ -10,7 +10,7 @@ export const controller = new LightingController(session, new PreferenceStorage(
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
     session.resume();
-    if (session.getSnapshot().state === 'connected') controller.notify('Page active again. The strip does not report its state. Apply your selection if needed.');
+    if (session.getSnapshot().state === 'connected') controller.notify('Page active again. Adjust a control or tap On if needed.');
   }
 });
 window.addEventListener('pagehide', () => { void session.disconnect(); });

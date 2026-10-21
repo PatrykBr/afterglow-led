@@ -5,8 +5,8 @@ import { favouriteName, type Favourite } from '../persistence/preferences';
 import { Icon } from './Icon';
 
 export function SavedLights({ app, favourites, selected, onEdit, onUse }: { app: LightingController; favourites: Favourite[]; selected: Settings; onEdit: (favourite?: Favourite) => void; onUse: () => void }) {
-  return <section className="saved-view" aria-labelledby="saved-title">
-    <div className="view-heading"><div><h2 id="saved-title">Saved lights</h2><p>Your colours and brightness.</p></div><button className="icon-button bordered" aria-label="Save current selection" onClick={() => onEdit()}><Icon name="plus" /></button></div>
+  return <section className="saved-view" aria-label="Saved colour settings">
+    <div className="view-heading"><p>Your colours and brightness.</p><button className="icon-button bordered" aria-label="Save current selection" onClick={() => onEdit()}><Icon name="plus" /></button></div>
     <div className="current-selection"><span className="colour-swatch" style={{ background: hex(selected.rgb) }} /><div><strong>Current selection</strong><p>{hex(selected.rgb)} at {selected.brightness}%</p></div><button className="text-button" onClick={() => onEdit()}>Save</button></div>
     {favourites.length === 0 ? <div className="empty-state"><span className="empty-symbol"><Icon name="saved" size={30} /></span><h3>Save a light you love</h3><p>Keep a colour and brightness together.<br />Name it for the moment you use it.</p><button className="primary-button" onClick={() => onEdit()}>Save current selection</button></div> : <div className="saved-list">{favourites.map(f => <div className="saved-item" key={f.id}>
       <button className="saved-apply" onClick={() => { app.select(f.settings); onUse(); }}><span className="saved-swatch" style={{ background: hex(f.settings.rgb) }} /><span><strong>{f.name}</strong><small>{f.settings.brightness}% brightness</small></span></button><button className="icon-button" aria-label={`Edit ${f.name}`} onClick={() => onEdit(f)}><Icon name="more" /></button>

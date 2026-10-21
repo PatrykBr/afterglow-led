@@ -6,6 +6,6 @@ export class Diagnostics {
     this.entries = this.entries.slice(-100);
   }
   export() {
-    return JSON.stringify({ app: 'Afterglow 1.1.0', userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'test', note: 'Commands are submitted without device acknowledgement. No device identifiers are recorded.', entries: this.entries }, null, 2);
+    return JSON.stringify({ app: 'Afterglow 1.2.0', userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'test', note: 'Commands are submitted without device acknowledgement. No device identifiers are recorded.', entries: this.entries }, null, 2);
   }
 }

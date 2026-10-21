@@ -19,11 +19,11 @@ describe('user intent and restoration', () => {
     expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
     expect(p.app.getSnapshot().requestedPower).toBe('unknown');
   });
-  it('allows disconnected edits and sends only on explicit apply after connection', async () => {
+  it('allows disconnected edits and uses explicit On for a prepared setting after connection', async () => {
     const p = setup(); p.app.select({ rgb: [0, 255, 0], brightness: 50 }); await p.session.connect();
     expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
-    p.app.apply(); await vi.advanceTimersByTimeAsync(0);
-    expect(packetHex(p.characteristic.writeValueWithoutResponse.mock.calls[0][0])).toBe('69 96 05 02 00 7F 00 7F');
+    p.app.power('on'); await vi.advanceTimersByTimeAsync(0);
+    expect(packetHex(p.characteristic.writeValueWithoutResponse.mock.calls[0][0])).toBe('69 96 06 01 01 00 FF 00 7F');
   });
   it('prepares colours after Off and On uses the current unscaled RGB and brightness', async () => {
     const p = setup(); await p.session.connect();

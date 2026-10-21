@@ -34,7 +34,7 @@ export function ColourPad({ app, settings, hue, onHueChange }: ColourProps) {
       onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); pointer(event); }}
       onPointerMove={event => { if (event.currentTarget.hasPointerCapture(event.pointerId)) pointer(event); }}
       onPointerUp={event => { if (event.currentTarget.hasPointerCapture(event.pointerId)) { pointer(event); event.currentTarget.releasePointerCapture(event.pointerId); commit(); } }}
-      onPointerCancel={event => { if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId); dirty.current = false; app.notify('Selection saved. Tap Apply to send it.'); }}
+      onPointerCancel={event => { if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId); dirty.current = false; app.notify('Selection saved. Adjust a control or tap On to use it.'); }}
       onKeyDown={keyboard} onKeyUp={event => { if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) commit(); }} onBlur={commit}>
       <span className="colour-cursor" />
     </div>
@@ -59,9 +59,9 @@ export function Brightness({ app, settings }: { app: LightingController; setting
   </section>;
 }
 
-export function Presets({ app, settings, onSave }: { app: LightingController; settings: Settings; onSave: () => void }) {
+export function Presets({ app, settings, onSave, onSaved }: { app: LightingController; settings: Settings; onSave: () => void; onSaved: () => void }) {
   return <section className="presets" aria-labelledby="presets-title">
-    <div className="section-heading"><h2 id="presets-title">Presets</h2><button className="text-button" onClick={onSave}><Icon name="plus" size={17} />Save this light</button></div>
+    <div className="section-heading"><h2 id="presets-title">Presets</h2><div className="preset-actions"><button className="icon-button glass-button" aria-label="Saved lights" onClick={onSaved}><Icon name="saved" size={19} /></button><button className="icon-button glass-button" aria-label="Save this light" onClick={onSave}><Icon name="plus" size={20} /></button></div></div>
     <div className="preset-grid">{PRESETS.map(preset => <button key={preset.name} className="preset" aria-pressed={hex(preset.rgb) === hex(settings.rgb)} onClick={() => app.select({ ...settings, rgb: preset.rgb })}>
       <span style={{ background: hex(preset.rgb) }}>{hex(preset.rgb) === hex(settings.rgb) && <Icon name="check" size={18} />}</span><span>{preset.name === 'Soft white' ? 'Warm' : preset.name}</span>
     </button>)}</div>

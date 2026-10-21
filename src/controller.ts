@@ -33,15 +33,11 @@ export class LightingController {
       this.persist({ ...this.snapshot.preferences, selected });
       if (!commit) return;
       if (this.snapshot.requestedPower === 'off') this.notify('Ready for next time. Tap Turn on to send this setting.');
-      else if (this.snapshot.session.state !== 'connected') this.notify('Setting saved here. Connect, then tap Apply selection.');
+      else if (this.snapshot.session.state !== 'connected') this.notify('Setting saved here. Connect, then adjust a control or tap On.');
       else void this.send({ kind: 'colour', settings: selected });
     } catch (error) { this.notify((error as Error).message); }
   }
   commit() { this.select(this.snapshot.preferences.selected); }
-  apply() {
-    if (this.snapshot.requestedPower === 'off') { this.power('on'); return; }
-    void this.send({ kind: 'colour', settings: this.snapshot.preferences.selected });
-  }
   power(power: 'on' | 'off') {
     if (this.snapshot.session.state !== 'connected') { this.notify('Connect before sending a power command.'); return; }
     this.patch({ requestedPower: power });

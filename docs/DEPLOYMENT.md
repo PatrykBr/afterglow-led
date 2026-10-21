@@ -14,6 +14,8 @@ The fresh hosted source repository is `https://git.chatgpt-team.site/77e8427c-4b
 
 ## Publish an update from Windows
 
+Version 1.2.0 removes Apply and bottom navigation, adds the glass styling, and keeps saved lights and options in sheets. The entry URL `https://afterglow-led.gardenmelon35.chatgpt.site/?v=1.2.0` uses the same storage origin and favourites as earlier versions.
+
 The version 1.1.0 interface revision keeps this same origin and stored settings. It adds Light, Saved and More views without changing Bluetooth packet formats, timing or session ownership. A cache-busting entry URL is `https://afterglow-led.gardenmelon35.chatgpt.site/?v=1.1.0`; this is the same storage origin as the original URL.
 
 1. Open this source repository in Codex with the Sites plugin connected to the owner account.

@@ -16,6 +16,12 @@ Production publication succeeded. The public HTTPS root returned HTTP 200 withou
 
 ## Physical acceptance still required
 
+### Glass interface and direct controls, version 1.2.0
+
+Apply and bottom navigation are removed. The single main screen uses translucent glass styling. Saved lights and Options open as sheets. Connecting still sends nothing; adjust a control or tap On to use the prepared setting. The controller's obsolete Apply method was removed and the prepared-setting test now asserts the full On packet. Protocol encoders, queue timing and connection ownership are unchanged.
+
+All 58 tests pass. Mocked UI checks show one chooser, zero connect writes, automatic colour/brightness submissions on committed edits, no colour updates after Off, and the latest unscaled RGB/brightness in the full On frame. Saved lights and Options open without any extra writes or chooser. At 320 pixels there is no horizontal overflow, and all tested buttons meet 44 by 44 pixels. The QA browser computes the main panel blur at 28 pixels with a translucent background. Opaque CSS fallbacks exist when blur is unavailable or reduced transparency is requested. A new native screenshot capture again timed out; physical Bluefy rendering and LED results remain unverified by this QA browser.
+
 ### Mobile interface revision, version 1.1.0
 
 The new Light view uses a wide hue/saturation pad, brightness, quick levels and presets. Saved and More are separate views. Exact colour, device controls and saved-light editing use native dialog sheets. Transport, scheduling, protocol and stored preference formats are unchanged.

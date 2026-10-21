@@ -4,9 +4,13 @@ This app has its own Sites project and source repository. It has no dependency o
 
 Project ID: `appgprj_6ad931265480819183506ff58bd7f9f4`.
 
-Expected origin: `https://afterglow-led.gardenmelon35.chatgpt.site`.
+Live URL: **https://afterglow-led.gardenmelon35.chatgpt.site**.
 
-The expected origin is not proof of a successful publication. The deployment result and any access requirements will be recorded here after publication.
+Publication succeeded on 2026-10-21. The site is public and opens without ChatGPT sign-in, as required for account-free use in Bluefy. Opening the production page in the QA browser returned HTTP 200, a secure context and a Bluetooth Permissions-Policy that allowed this page to use Bluetooth. This verifies hosting, not actual iPhone BLE access.
+
+The initial tested application source commit is `c022d30081ea078db852a6471ad2b71c179aeecb`. Initial saved version: `appgprj_6ad931265480819183506ff58bd7f9f4~appgver_025ee1a9a53081918b0d510ddd157068`. Public deployment: `appgdep_6ad935b8cb348191bf16c3e33e836065`. Subsequent documentation commits do not alter the tested application assets.
+
+The fresh hosted source repository is `https://git.chatgpt-team.site/77e8427c-4b69-4ebf-a960-50470b171b5a/appgprj_6ad931265480819183506ff58bd7f9f4.git`. Its access is separate from the public application URL. Use the Sites source workflow for short-lived repository authorization. This directory also contains the complete local Git repository and dependency lockfile.
 
 ## Publish an update from Windows
 

@@ -10,7 +10,9 @@ Covered: golden colour, Off and full On bytes; floor rounding; invalid RGB and b
 
 The desktop browser QA tab used a simulated Web Bluetooth object. Connect generated one chooser request and zero writes. Apply, Off, colour and brightness edits while Off, then On generated exactly three frames. The On frame contained the latest prepared RGB and brightness, with no second chooser. A real browser permission prompt and actual BLE radio were not used in this QA test.
 
-Browser checks at a 390-pixel iPhone layout found no horizontal overflow or application console errors. Creating a named favourite stored it locally without an additional Bluetooth write. Quick levels and presets have at least 44-pixel touch targets. Additional viewport, keyboard and production-host results are recorded below as completed.
+Browser checks at 320-pixel and 390-pixel phone widths, and a 1280-pixel desktop width, found no horizontal overflow. The app loaded without application console errors. Creating a named favourite stored it locally without an additional Bluetooth write. Quick levels and presets have at least 44-pixel touch targets. A keyboard arrow adjusts the hue and saves the new disconnected selection locally.
+
+Production publication succeeded. The public HTTPS root returned HTTP 200 without sign-in, loaded the built application assets, and allowed Bluetooth under the browser's Permissions-Policy. This desktop QA browser exposing Bluetooth is not evidence about Bluefy's actual iPhone launch context. Actual phone and LED checks remain pending below.
 
 ## Physical acceptance still required
 

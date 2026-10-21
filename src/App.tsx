@@ -35,7 +35,6 @@ export default function App() {
     {state.session.error && <p role="alert" className="error connection-error">{state.session.error}</p>}
     {state.storageWarning && <p role="alert" className="error">{state.storageWarning}</p>}
     <main id="main">
-      <div className="control-panel">
         <PowerControls app={controller} state={state} />
         <section className="colour-section" aria-labelledby="colour-title">
           <div className="section-heading"><h2 id="colour-title" tabIndex={-1}>Colour</h2><button className="colour-value" aria-label={`Exact colour, ${hex(selected.rgb)}`} onClick={() => setModal({ kind: 'colour' })}><span style={{ background: hex(selected.rgb) }} />{hex(selected.rgb)}<Icon name="sliders" size={16} /></button></div>
@@ -43,7 +42,6 @@ export default function App() {
         </section>
         <Brightness app={controller} settings={selected} />
         <Presets app={controller} settings={selected} onSave={() => setModal({ kind: 'favourite' })} onSaved={() => setModal({ kind: 'saved' })} />
-      </div>
       <p className="feedback" role="status" aria-live="polite"><span className={`feedback-dot ${state.session.pending ? 'sending' : ''}`} />{state.session.pending ? 'Sending…' : shortFeedback(state.message, state.session.state === 'connected')}</p>
     </main>
     {modal?.kind === 'device' && <Sheet title="Your strip" onDismiss={dismiss}><DeviceDetails app={controller} state={state} onDone={dismiss} /></Sheet>}

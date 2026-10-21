@@ -4,6 +4,14 @@ Date: 2026-10-21.
 
 ## Software checks
 
+### Open layout and sheet fixes, version 1.2.1, 2026-10-22
+
+Removed the enclosing main glass panel and decorative pill surrounds. The X is now a plain icon with a 44-pixel target. Sheets initially focus their heading and restore focus to their opener; Tab still gives the close button a visible focus outline. A downward touch drag of at least 72 pixels dismisses from the header or noninteractive content at scroll top. Short, horizontal, upward, cancelled and multiple-touch gestures do not dismiss. Fields, sliders, buttons, links and already-scrolled content keep their own interactions.
+
+The browser reproduced the original fault: a 110-pixel downward touch sequence left Options open, and the close button received initial focus with a circular border. The same sequence now dismisses. Native listener tests cover gesture thresholds, cancellation, scrolling, interactive targets and cleanup. All 67 tests and the Windows production build pass. Shared-browser checks confirm all five sheet entry points dismiss, focus returns to their opener, Escape and backdrop dismissal work, and sliders and scrolled content stay open. With a simulated peripheral, opening and dismissing these sheets produces zero writes and retains one device selection. At 320 and 390 pixels wide there is no horizontal overflow and tested buttons meet 44-pixel targets.
+
+These are software and synthetic-touch checks in the desktop QA browser. Actual Bluefy swipe feel and iPhone rendering still require owner confirmation. No new screenshot review or physical LED result is claimed. Bluetooth protocol, session ownership and scheduling are unchanged.
+
 Windows, Node.js 24.19.0. `npm run check` passed 45 tests and built production assets with Vite 7.3.7. Tests use a simulated GATT peripheral and controlled Vitest timers. They do not verify radio delivery or LED output.
 
 Covered: golden colour, Off and full On bytes; floor rounding; invalid RGB and brightness; colour conversions; validated preferences; corrupt or unavailable storage; discovery options; verified write capability; connection without writes; repeated commands using one chooser; fresh GATT discovery after reconnect; no replay; queue spacing and coalescing; Off cancellation and power ordering; last-write hold; in-flight disconnect timing; asynchronous disconnect confirmation; write and connection deadlines; chooser cancellation and denial; link loss; late completion after a new session; disconnected selection; no restoration/subscription writes; favourites add, rename, replace and delete; Off prepares the next On selection.

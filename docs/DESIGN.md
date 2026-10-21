@@ -1,10 +1,12 @@
-# Design direction, version 1.2
+# Design direction, version 1.2.1
 
 Afterglow is one lighting remote screen. The owner requested removal of Apply and bottom navigation, with an iOS 26 inspired glass appearance. Controls continue sending on release. Connection never sends a command. After connecting, adjust a control or tap On to use the prepared setting. Off continues holding colour edits for the next On request.
 
 Palette: midnight #101b32, deep glass #1b2d4d, pearl #f5f8ff, mist #c7d3e8, cool blue #a9c9ff and error rose #ffd0d4. The selected colour adds a soft, static background glow. White edges and restrained inset highlights define translucent controls. System sans typography uses a 28-pixel title, 17-pixel section headings and 14-pixel controls. No remote fonts or decorative images.
 
-Layout: the header contains connection status, Connect or the device button, and a small options button. One glass panel contains On and Off, the colour pad, brightness and presets. Saved lights and Save are small actions beside Presets. Saved settings, exact RGB/hue/saturation, device controls and help open only as sheets. There are no page tabs, bottom bar or Apply action. Alignment is left except centred touch controls.
+Layout: the header contains connection status, Connect or the device button, and a small options button. Power, the colour pad, brightness and presets sit directly on the ambient background. Glass belongs to individual touch controls and temporary sheets. Remove enclosing cards and nested pill surrounds. Saved lights and Save are small actions beside Presets. Saved settings, exact RGB/hue/saturation, device controls and help open only as sheets. There are no page tabs, bottom bar or Apply action. Alignment is left except centred touch controls.
+
+Revision sketch: header / power actions / wide colour pad / brightness / presets / feedback. The colour pad remains the main visual element. Spacing separates controls without card borders. Sheets have a plain X with a 44-pixel hit target, initial focus on their title, and downward drag dismissal from the header or noninteractive content at scroll top. Keyboard focus remains visible on interactive controls. This removes the extra framing the owner disliked while retaining the established palette and typography.
 
 Review: glass is a material treatment around the existing compact controls, not another navigation layer. A power toggle would claim device knowledge the protocol cannot provide, so On and Off stay explicit. The active style means last requested. Native modal sheets preserve focus handling and explicit Close actions. Touch targets are at least 44 pixels. Opening sheets and restoring data send nothing. Blur has a more opaque fallback, including reduced-transparency preferences. Motion does not run unattended. This is a CSS treatment inspired by Apple's materials, not a claim to use native Liquid Glass rendering.
 

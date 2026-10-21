@@ -29,7 +29,7 @@ The production JavaScript target is Safari 15 syntax. Compilation does not suppl
 
 See [the short Bluefy guide](docs/IPHONE.md). Open the deployment URL from [the deployment record](docs/DEPLOYMENT.md) in Bluefy. Tap Connect and choose BJ_LED_M. Connect leaves the lights unchanged. Colour and brightness controls send on release. Tap On to use the prepared colour and brightness explicitly.
 
-Version 1.2 uses one screen with glass styling and no Apply action or bottom navigation. Saved combinations open from the bookmark beside Presets. Help and diagnostics are behind the header options button. Exact colour and device details also open in sheets. Sheets reuse the same session and never send commands on their own. Blur has opaque and reduced-transparency fallbacks.
+Version 1.2.1 places controls directly on the ambient background, with glass on individual controls and sheets. There is no Apply action or bottom navigation. Saved combinations open from the bookmark beside Presets. Help and diagnostics are behind the header options button. Exact colour and device details also open in sheets. Swipe down at the top of a sheet or tap its plain X to dismiss. Sheets reuse the same session and never send commands on their own. Blur has opaque and reduced-transparency fallbacks.
 
 On and Off are explicit command requests. The strip does not acknowledge its physical power state. After requesting Off, edits prepare the next On selection. A reload restores settings and favourites, with power treated as unknown; it sends nothing.
 

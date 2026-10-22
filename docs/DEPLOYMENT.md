@@ -16,6 +16,8 @@ The repository-root `vercel.json` selects a static build:
 
 The build commands select Bun 1.4.4 explicitly and prepend its installation directory to PATH. Vercel's default Bun 1.4.1 image did not provide `bun fmt`; selecting the pinned executable preserves the local checks. This adds no application dependency. Local development still uses the installed Bun directly. The app needs no backend, functions, database or runtime secrets.
 
+Vercel minifies `vercel.json` before invoking the build command. The build restores that file from Git HEAD before running the formatting checks, so validation checks the committed source rather than Vercel's generated copy.
+
 Once the GitHub repository is linked to Vercel, pushes to `main` can build and publish automatically. Use the public production URL in Bluefy. Preview URLs may require Vercel authentication. A local CLI deployment uses `vercel link`, verifies the linked project, then `vercel --prod`. CLI login is separate from the connected Vercel tool.
 
 After publication, verify the HTTPS page, all hashed assets and the Bluetooth permission header. Then complete the [physical acceptance checklist](VALIDATION.md) on the actual iPhone.

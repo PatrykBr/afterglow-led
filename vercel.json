@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "curl -fsSL https://bun.com/install | bash -s \"bun-v1.4.4\" && export PATH=\"$HOME/.bun/bin:$PATH\" && bun ci",
-  "buildCommand": "export PATH=\"$HOME/.bun/bin:$PATH\" && cat vercel.json && bun fmt --stdin-filepath vercel.json < vercel.json && bun run check",
+  "buildCommand": "export PATH=\"$HOME/.bun/bin:$PATH\" && git show HEAD:vercel.json > vercel.json && bun run check",
   "outputDirectory": "dist",
   "headers": [
     {

@@ -1,5 +1,13 @@
 # Validation record
 
+## Vercel hosting, 2026-10-22
+
+The cleanup and hosting configuration are committed and pushed to the private GitHub repository. The production site is [afterglow-led.vercel.app](https://afterglow-led.vercel.app). GitHub pushes to `main` trigger Vercel builds. See [deployment details](DEPLOYMENT.md) for project and initial verified deployment identifiers.
+
+Vercel passed formatting, type checking, all 86 tests and production bundling using the pinned Bun 1.4.4. The public HTTPS page and its hashed JavaScript, CSS and icon returned HTTP 200 without authentication. Response headers include `Permissions-Policy: bluetooth=(self)` and `X-Content-Type-Options: nosniff`.
+
+The production Chromium flow with a simulated peripheral passed connection without writes, cancelled-slider handling, keyboard edits, invalid and valid colour entry, Off/prepared edits/On, favourite validation and renaming, and reload restoration. There were no unhandled page errors or horizontal overflow at widths 280, 320, 390 and 1280 pixels. T3 snapshot automation timed out twice, so the test used the existing local Playwright installation. No new physical iPhone or LED result is claimed.
+
 ## Codebase audit, 2026-10-22
 
 The audit covered every tracked source, test, script, dependency declaration, configuration file and document. Afterglow remains a static browser app with one Bluetooth session owner. All declared dependencies have current uses; no dependency was added or removed.
@@ -32,7 +40,7 @@ Keyboard brightness edits submit once per key release, without an extra write wh
 
 The main screen and saved-light sheet have no page horizontal overflow at widths 280, 320, 390 and 1280 pixels. The tested flow produced no unhandled page errors.
 
-These are software checks with simulated transport. This audit has not published the local changes or tested actual iPhone Bluetooth delivery.
+These are software checks with simulated transport. They do not verify actual iPhone Bluetooth delivery.
 
 ## Physical evidence and acceptance
 

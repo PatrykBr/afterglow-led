@@ -16,6 +16,8 @@ One scheduler serializes writes, leaves at least 80 ms after a completed write, 
 
 Each session and scheduler activation has a generation. Stop, link loss, timeout and explicit disconnect invalidate it, abort bounded waits and cancel the queue. A late browser completion cannot submit another write or change the new connection state. The browser cannot cancel an already submitted without-response write, so that result is uncertain. There are no automatic lighting retries. A stale connection completion is disconnected when there is no newer attempt; it cannot tear down a newer active connection.
 
+New activations clear old write promises and activity times. A completed browser write updates timing only while it is the current tracked write. A late connection to a different, previously selected device is disconnected even if the new device is connected.
+
 ## Teardown
 
 Normal disconnect stops new work, cancels pending jobs, waits for an in-flight browser write to settle with an 8-second bound, then preserves a 3-second hold after the last observed write activity. It waits up to 1.2 seconds for the disconnect event. An error or lost link invalidates immediately. The normal hold cannot guarantee delivery of a browser write that never completes. Closing or suspending iOS can interrupt any JavaScript timer. `pagehide` requests a best-effort normal disconnect; returning to the page checks the GATT link and never replays commands.
@@ -23,6 +25,8 @@ Normal disconnect stops new work, cancels pending jobs, waits for an in-flight b
 ## Local data and hosting
 
 The local schema has version 1, validated selected settings and at most 30 uniquely identified favourites. Names have 1 to 40 characters. Invalid, inaccessible or full storage produces a notice and leaves in-memory controls usable. No saved state can trigger transport work.
+
+Unchanged selections do not rewrite storage, including release after a saved draft. Explicit repeated commands still submit. A commit retries a failed save. Cancelled pointer edits remain saved locally and do not submit later on blur.
 
 The HTTPS host serves assets. All Bluetooth work stays in the phone browser. There is no backend or service worker, no account-dependent favourites and no background scheduling claim. The bounded diagnostic log is kept only in page memory and exported when requested.
 

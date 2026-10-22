@@ -15,11 +15,12 @@ afterEach(() => {
 });
 const setup = () => {
   const p = peripheral();
+  const setItem = vi.fn();
   const storage = new PreferenceStorage(() => ({
     getItem: () => JSON.stringify({ version: 1, selected: DEFAULT_SETTINGS, favourites: [] }),
-    setItem: vi.fn(),
+    setItem,
   }));
-  return { ...p, app: new LightingController(p.session, storage, p.diagnostics) };
+  return { ...p, setItem, app: new LightingController(p.session, storage, p.diagnostics) };
 };
 
 describe('user intent and restoration', () => {
@@ -38,6 +39,7 @@ describe('user intent and restoration', () => {
     p.app.select({ rgb: [0, 255, 0], brightness: 50 });
     await p.session.connect();
     expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
+    expect(p.app.getSnapshot().message).toBe('Adjust a control or tap On to use this setting.');
     p.app.power('on');
     await clock.tickAsync(0);
     expect(packetHex(p.characteristic.writeValueWithoutResponse.mock.calls[0][0])).toBe(
@@ -68,6 +70,46 @@ describe('user intent and restoration', () => {
     p.app.commit();
     await clock.tickAsync(0);
     expect(p.characteristic.writeValueWithoutResponse).toHaveBeenCalledTimes(1);
+  });
+  it('does not rewrite unchanged preferences on release or explicit repeat commands', async () => {
+    const p = setup();
+    await p.session.connect();
+    const selected = { ...DEFAULT_SETTINGS, brightness: 75 };
+    p.app.select(selected, false);
+    p.app.select(selected, false);
+    p.app.commit();
+    await clock.tickAsync(0);
+    p.app.commit();
+    await clock.tickAsync(80);
+    expect(p.setItem).toHaveBeenCalledTimes(1);
+    expect(p.characteristic.writeValueWithoutResponse).toHaveBeenCalledTimes(2);
+    expect(p.app.getSnapshot().preferences.selected).toEqual(selected);
+  });
+  it('shows connection guidance after reconnect instead of an old command message', async () => {
+    const p = setup();
+    await p.session.connect();
+    p.app.power('off');
+    await clock.tickAsync(0);
+    expect(p.app.getSnapshot().message).toContain('Off command sent');
+    p.server.disconnect();
+    await p.session.connect();
+    expect(p.app.getSnapshot().message).toBe('Ready for next On. Colour changes are held.');
+    expect(p.app.getSnapshot().requestedPower).toBe('off');
+    expect(p.characteristic.writeValueWithoutResponse).toHaveBeenCalledTimes(1);
+  });
+  it('keeps edits usable after a quota failure and retries saving on commit', () => {
+    const p = setup();
+    p.setItem.mockImplementationOnce(() => {
+      throw new DOMException('Full', 'QuotaExceededError');
+    });
+    const selected = { ...DEFAULT_SETTINGS, brightness: 75 };
+    p.app.select(selected, false);
+    expect(p.app.getSnapshot().preferences.selected).toEqual(selected);
+    expect(p.app.getSnapshot().storageWarning).toContain('could not save');
+    p.app.commit();
+    expect(p.setItem).toHaveBeenCalledTimes(2);
+    expect(p.app.getSnapshot().storageWarning).toBeUndefined();
+    expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
   });
   it('can add, rename, replace and delete a favourite without sending commands', async () => {
     const p = setup();

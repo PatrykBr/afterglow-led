@@ -28,6 +28,9 @@ export class CommandScheduler {
 
   activate(writer: Writer) {
     this.stop();
+    this.rawWrite = undefined;
+    this.lastActivity = null;
+    this.lastCompletion = -Infinity;
     this.writer = writer;
     this.abort = new AbortController();
   }
@@ -62,12 +65,12 @@ export class CommandScheduler {
       });
     return new Promise((resolve) => {
       this.queue.push({ command, resolve });
-      this.changed(this.queue.length + (this.activeRun === this.generation ? 1 : 0));
+      this.changed(this.queue.length + (this.rawWrite ? 1 : 0));
       void this.drain();
     });
   }
 
-  cancelColours() {
+  private cancelColours() {
     this.queue = this.queue.filter((job) => {
       if (job.command.kind !== 'colour') return true;
       job.resolve({ status: 'cancelled', command: job.command });
@@ -104,14 +107,13 @@ export class CommandScheduler {
         const raw = Promise.resolve(this.writer(bytes));
         this.rawWrite = raw;
         // Track actual completion for a normal disconnect, including cancelled writes.
-        void raw.then(
-          () => {
+        const completed = () => {
+          if (this.rawWrite === raw) {
             this.lastActivity = Date.now();
-          },
-          () => {
-            this.lastActivity = Date.now();
-          },
-        );
+            this.rawWrite = undefined;
+          }
+        };
+        void raw.then(completed, completed);
         await bounded(raw, 8000, signal);
         if (generation !== this.generation) throw new CancelledError();
         this.lastCompletion = Date.now();

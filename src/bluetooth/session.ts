@@ -34,7 +34,6 @@ export class BluetoothSession {
   private snapshot: SessionSnapshot = { state: 'disconnected', hasDevice: false, pending: 0 };
   private listeners = new Set<() => void>();
   private device?: BluetoothDevice;
-  private characteristic?: BluetoothRemoteGATTCharacteristic;
   private generation = 0;
   private attempt = new AbortController();
   private disconnectTask?: Promise<void>;
@@ -100,13 +99,8 @@ export class BluetoothSession {
       const discovery = this.discover(selected, generation);
       const characteristic = await bounded(discovery, 15000, this.attempt.signal);
       if (generation !== this.generation) return;
-      this.characteristic = characteristic;
       this.scheduler.activate(async (bytes) => {
-        if (
-          generation !== this.generation ||
-          !this.characteristic ||
-          this.snapshot.state !== 'connected'
-        )
+        if (generation !== this.generation || this.snapshot.state !== 'connected')
           throw new CancelledError();
         await characteristic.writeValueWithoutResponse(bytes);
       });
@@ -121,7 +115,7 @@ export class BluetoothSession {
   private async discover(device: BluetoothDevice, generation: number) {
     const server = await device.gatt!.connect();
     if (generation !== this.generation) {
-      if (this.snapshot.state === 'disconnected') server.disconnect();
+      if (device !== this.device || this.snapshot.state === 'disconnected') server.disconnect();
       throw new CancelledError();
     }
     const service = await server.getPrimaryService(SERVICE);
@@ -167,7 +161,6 @@ export class BluetoothSession {
     if (this.snapshot.state === 'disconnected') return Promise.resolve();
     this.generation++;
     this.attempt.abort();
-    this.characteristic = undefined;
     this.scheduler.stop();
     this.patch({ state: 'disconnecting', error: undefined });
     this.disconnectTask = this.finishDisconnect().finally(() => {
@@ -208,7 +201,6 @@ export class BluetoothSession {
   private fail(message: string) {
     this.generation++;
     this.attempt.abort();
-    this.characteristic = undefined;
     this.scheduler.stop();
     // Error teardown is immediate. The normal disconnect hold is not a retry policy.
     this.patch({ state: 'disconnected', error: message, pending: 0 });

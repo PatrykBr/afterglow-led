@@ -1,6 +1,6 @@
 import { installClock, type TestClock } from './clock';
 let clock: TestClock;
-import { afterEach, beforeEach, describe, expect, it, vi } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 import { peripheral, deferred } from './peripheral';
 import { CHARACTERISTIC, SERVICE, packetHex } from '../src/protocol/bojia';
 import { DEFAULT_SETTINGS } from '../src/domain/lighting';
@@ -154,6 +154,37 @@ describe('session and command lifecycle', () => {
       '69 96 05 02 00 00 FF FF',
     );
   });
+  it('reports queued and in-flight jobs without counting the spacing wait as a write', async () => {
+    const p = peripheral();
+    await p.session.connect();
+    const first = p.session.submit({ kind: 'on', settings: DEFAULT_SETTINGS });
+    const second = p.session.submit({ kind: 'off' });
+    expect(p.session.getSnapshot().pending).toBe(2);
+    await clock.tickAsync(0);
+    await first;
+    expect(p.session.getSnapshot().pending).toBe(1);
+    await clock.tickAsync(80);
+    await second;
+    expect(p.session.getSnapshot().pending).toBe(0);
+  });
+  it('rejects excess power requests without dropping the queued requests', async () => {
+    const p = peripheral();
+    await p.session.connect();
+    const queued = Array.from({ length: 40 }, () =>
+      p.session.submit({ kind: 'on', settings: DEFAULT_SETTINGS }),
+    );
+    const excess = await p.session.submit({ kind: 'off' });
+    expect(excess.status).toBe('failed');
+    expect(excess.message).toContain('Too many pending commands');
+    expect(p.session.getSnapshot().pending).toBe(40);
+    const close = p.session.disconnect();
+    await clock.tickAsync(0);
+    await close;
+    expect((await Promise.all(queued)).every((outcome) => outcome.status === 'cancelled')).toBe(
+      true,
+    );
+    expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
+  });
   it('holds the final write for three seconds before normal disconnect', async () => {
     const p = peripheral();
     await p.session.connect();
@@ -270,6 +301,54 @@ describe('session and command lifecycle', () => {
     await clock.tickAsync(0);
     expect(p.session.getSnapshot().state).toBe('connected');
     expect(p.service.getCharacteristic).toHaveBeenCalledTimes(1);
+  });
+  it('releases a late connection to an old device without disconnecting the new device', async () => {
+    const p = peripheral();
+    const next = peripheral();
+    const gate = deferred<typeof p.server>();
+    p.server.connect.mockImplementationOnce(() => gate.promise);
+    const old = p.session.connect();
+    await clock.tickAsync(15000);
+    await old;
+    p.access.requestDevice.mockResolvedValueOnce(next.device);
+    await p.session.connect(true);
+    p.server.connected = true;
+    gate.resolve(p.server);
+    await clock.tickAsync(0);
+    expect(p.server.connected).toBe(false);
+    expect(next.server.connected).toBe(true);
+    expect(p.session.getSnapshot().state).toBe('connected');
+  });
+  it('does not carry an unresolved write into a reconnected session', async () => {
+    const p = peripheral();
+    await p.session.connect();
+    const gate = deferred<void>();
+    p.characteristic.writeValueWithoutResponse.mockImplementationOnce(() => gate.promise);
+    const write = p.session.submit(colour);
+    await clock.tickAsync(8000);
+    expect((await write).status).toBe('uncertain');
+    await p.session.connect();
+    const close = p.session.disconnect();
+    await clock.tickAsync(0);
+    expect(p.session.getSnapshot().state).toBe('disconnected');
+    await close;
+    gate.resolve();
+  });
+  it('ignores old write completion when calculating the new session disconnect hold', async () => {
+    const p = peripheral();
+    await p.session.connect();
+    const gate = deferred<void>();
+    p.characteristic.writeValueWithoutResponse.mockImplementationOnce(() => gate.promise);
+    const write = p.session.submit(colour);
+    await clock.tickAsync(8000);
+    await write;
+    await p.session.connect();
+    gate.resolve();
+    await clock.tickAsync(0);
+    const close = p.session.disconnect();
+    await clock.tickAsync(0);
+    expect(p.session.getSnapshot().state).toBe('disconnected');
+    await close;
   });
   it('refuses an unsupported write channel', async () => {
     const p = peripheral();

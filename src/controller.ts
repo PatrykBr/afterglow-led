@@ -32,10 +32,21 @@ export class LightingController {
       preferences,
       session: session.getSnapshot(),
       requestedPower: 'unknown',
-      message: 'Your light, on your terms. Connect when you are ready.',
+      message: 'Connect when ready. Your selection is saved here.',
       storageWarning: warning,
     };
-    session.subscribe(() => this.patch({ session: session.getSnapshot() }));
+    session.subscribe(() => {
+      const sessionState = session.getSnapshot();
+      this.patch({
+        session: sessionState,
+        message:
+          sessionState.state === 'connected' && this.snapshot.session.state !== 'connected'
+            ? this.snapshot.requestedPower === 'off'
+              ? 'Ready for next On. Colour changes are held.'
+              : 'Adjust a control or tap On to use this setting.'
+            : this.snapshot.message,
+      });
+    });
   }
   subscribe = (listener: () => void) => {
     this.listeners.add(listener);
@@ -57,12 +68,18 @@ export class LightingController {
   select(settings: Settings, commit = true) {
     try {
       const selected = validateSettings(settings);
-      this.persist({ ...this.snapshot.preferences, selected });
+      const previous = this.snapshot.preferences.selected;
+      if (
+        (commit && this.snapshot.storageWarning) ||
+        selected.brightness !== previous.brightness ||
+        selected.rgb.some((value, index) => value !== previous.rgb[index])
+      )
+        this.persist({ ...this.snapshot.preferences, selected });
       if (!commit) return;
       if (this.snapshot.requestedPower === 'off')
-        this.notify('Ready for next time. Tap Turn on to send this setting.');
+        this.notify('Ready for next On. Colour changes are held.');
       else if (this.snapshot.session.state !== 'connected')
-        this.notify('Setting saved here. Connect, then adjust a control or tap On.');
+        this.notify('Connect when ready. Your selection is saved here.');
       else void this.send({ kind: 'colour', settings: selected });
     } catch (error) {
       this.notify((error as Error).message);
@@ -85,7 +102,7 @@ export class LightingController {
   }
   private async send(command: Command) {
     const id = ++this.feedbackId;
-    this.notify('Sending your command…');
+    this.notify('Sending…');
     const outcome = await this.session.submit(command);
     if (outcome.status === 'submitted' && command.kind !== 'off')
       this.patch({ lastSubmitted: command.settings });
@@ -93,9 +110,9 @@ export class LightingController {
     if (outcome.status === 'submitted')
       this.notify(
         command.kind === 'off'
-          ? 'Off command sent. Colour edits will prepare your next On setting.'
+          ? 'Off command sent. Edits prepare your next On.'
           : command.kind === 'on'
-            ? 'On command sent with your selected colour and brightness.'
+            ? 'On command sent.'
             : 'Colour and brightness sent.',
       );
     else if (outcome.status === 'uncertain')

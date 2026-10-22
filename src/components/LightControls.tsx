@@ -57,6 +57,12 @@ function Range({
         onDraft(Number(event.target.value));
       }}
       onPointerUp={commit}
+      onPointerCancel={() => {
+        dirty.current = false;
+      }}
+      onLostPointerCapture={() => {
+        dirty.current = false;
+      }}
       onBlur={commit}
       onKeyUp={(event) => {
         if (
@@ -103,7 +109,7 @@ export function Brightness({ app, settings }: { app: LightingController; setting
   );
 }
 
-export function QuickLevels({ app, settings }: { app: LightingController; settings: Settings }) {
+function QuickLevels({ app, settings }: { app: LightingController; settings: Settings }) {
   return (
     <div className="quick-levels" aria-label="Quick brightness levels">
       {[10, 25, 50, 100].map((level) => (

@@ -16,20 +16,6 @@ type Modal =
   | { kind: 'favourite'; favourite?: Favourite; returnToSaved?: boolean }
   | null;
 
-function shortFeedback(message: string, connected: boolean) {
-  if (message.startsWith('Your light,') || message.startsWith('Setting saved here.'))
-    return connected
-      ? 'Adjust a control or tap On to use this setting.'
-      : 'Connect when ready. Your selection is saved here.';
-  if (message.startsWith('Ready for next time.'))
-    return 'Ready for next On. Colour changes are held.';
-  if (message.startsWith('Off command sent.'))
-    return 'Off command sent. Edits prepare your next On.';
-  if (message.startsWith('On command sent with')) return 'On command sent.';
-  if (message.startsWith('Sending your command')) return 'Sending…';
-  return message;
-}
-
 export default function App() {
   const state = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const { selected, favourites } = state.preferences;
@@ -80,9 +66,7 @@ export default function App() {
           onSaved={() => setModal({ kind: 'saved' })}
         />
         <p className="feedback" role="status" aria-live="polite">
-          {state.session.pending
-            ? 'Sending…'
-            : shortFeedback(state.message, state.session.state === 'connected')}
+          {state.session.pending ? 'Sending…' : state.message}
         </p>
       </main>
       {modal?.kind === 'device' && (

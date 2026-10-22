@@ -1,95 +1,57 @@
 # Validation record
 
-Date: 2026-10-21.
+## Codebase audit, 2026-10-22
 
-## Software checks
+The audit covered every tracked source, test, script, dependency declaration, configuration file and document. Afterglow remains a static browser app with one Bluetooth session owner. All declared dependencies have current uses; no dependency was added or removed.
 
-### Top power controls and sliding highlight, version 1.5.1, 2026-10-22
+Implemented changes:
 
-Power now precedes colour in the DOM and visual order. The production preview was reviewed at 390 by 844; at 320 by 640 there was no horizontal overflow and power targets measured 66 by 48 pixels. Neither button is selected before a request. A browser sample measured the highlight's horizontal translation at 0 pixels before Off, 48.87 pixels during the transition and 78 pixels afterward, with a configured 280 ms slide. The existing reduced-motion rule now also covers pseudo-elements. Native buttons retain disabled behaviour, keyboard focus and aria-pressed for the last request.
+- Reset write promises and timing when a new connection activates. Late writes from the old connection cannot delay a later disconnect or update its hold time. Normal disconnect still waits for the current write and preserves the three-second hold.
+- Disconnect a late GATT connection to an old device without tearing down a newer device connection.
+- Count queued and in-flight jobs accurately. Preserve the 40-request limit, power ordering, colour coalescing and cancellation.
+- Keep cancelled range edits local when the input later loses focus.
+- Skip repeated storage writes for unchanged selections, while preserving explicit repeat commands and retrying failed saves on commit.
+- Remove unused icons, redundant characteristic state, duplicate favourite validation, feedback-string parsing and unused CSS fallbacks. Power styling uses its existing aria-pressed state.
+- Enable unused-local and unused-parameter checks. Shorten obsolete interface and deployment instructions.
 
-With a simulated peripheral, Connect sent no commands and used one chooser. On followed by Off produced their full expected frames. Brightness editing after Off added no write; the next On included the latest 25% brightness scalar. All 78 tests, formatting, type checking and the Bun production build pass. Protocol and session code are unchanged. This is software verification; physical iPhone/Bluefy results remain separate.
+### Automated checks
 
-### Wheel selection and Bun migration, version 1.5.0, 2026-10-22
+The baseline passed 78 tests. The updated suite passes 86 tests. New regressions cover old-device cleanup, unresolved and late write completion across reconnects, pending counts, queue capacity, storage-write deduplication, quota recovery and reconnect guidance. The three lifecycle regressions were observed failing before the fixes.
 
-The owner selected the wheel. The palette, dimmer and layout chooser are removed. Old layout links open the wheel; saved lighting preferences keep their original schema. Named quick colours moved into Edit colour beside the existing precision controls.
+Formatting, strict type checking with unused-code checks, tests with coverage and production bundling pass with Bun 1.4.4. Coverage measures imported tested modules; it does not represent the complete React UI. Bun audit reports no vulnerabilities among 15 checked packages.
 
-On Windows, stable Bun 1.4.4 installs the committed bun.lock with `bun ci`, serves development HTML with HMR, checks TypeScript, formats source, runs tests with coverage and bundles the static production assets. Vite, Vitest, the separate TypeScript package and the npm lockfile are removed. All 78 tests pass with 184 assertions; formatting, type checking and production build pass. Bun audit reports no vulnerabilities among the 15 checked packages. Async clock tests use @sinonjs/fake-timers under Bun because its native timer API does not yet provide async advancement. Coverage is 95.87% of lines in imported tested modules, not a measurement of the entire UI.
+### Browser checks
 
-A development App.tsx hot update retained one simulated device selection, the active connection and zero writes. The production preview loaded its hashed JavaScript, CSS and icon with HTTP 200 and correct content types. A legacy palette query still displayed the wheel. With a simulated peripheral, Connect produced one chooser and no writes; wheel and quick brightness actions reused the connection. The Ocean quick colour updated Hex and RGB fields and submitted its expected scaled frame. Off submitted `69 96 02 01 00`; choosing Ember and changing brightness afterward submitted nothing. On then submitted `69 96 06 01 01 FF 68 2F 7F`, the latest unscaled Ember colour at 50%, without another chooser. A synthetic downward sheet swipe dismissed without a write. Reload restored the selection while disconnected with power unknown.
+Local Chromium with a simulated Web Bluetooth peripheral exercised the production bundle. The T3 collaborative browser opened, but both snapshot attempts timed out; verification used a temporary Playwright installation outside the repository.
 
-The production main-screen screenshot was reviewed at 390 by 844. At both 390 and 320 pixels wide there was no horizontal overflow; tested main buttons and sliders had at least 44-pixel hit regions. These are desktop browser and simulated transport checks. The Bun-built release still needs actual iPhone/Bluefy and physical strip verification, particularly Off/On. Earlier physical evidence below is unchanged.
+A cancelled brightness edit followed by blur originally submitted one lighting command and wrote preferences twice. The fixed flow submits zero commands and writes preferences once.
 
-### Three researched control layouts, version 1.4.0, 2026-10-22
+The checked flow connects with one chooser and zero initial writes; rejects black Hex input; submits the expected colour frame for valid Hex; sends the exact Off frame; holds subsequent brightness edits; saves and renames a favourite without writes; reports invalid names for both rename and replacement; and sends the latest unscaled RGB/brightness in the full On frame. Reload restores the saved favourite and brightness while disconnected, with requested power unknown and no writes.
 
-The research and tradeoffs are documented in UX_RESEARCH.md with primary sources from Apple, Hue, LIFX and Nanoleaf. The three alternatives are working app layouts, not static mockups. They share the existing controller and Bluetooth session. A separate validated layout preference leaves stored lighting preferences unchanged.
+Keyboard brightness edits submit once per key release, without an extra write when the input loses focus. Opening the colour sheet focuses its heading.
 
-All 87 automated tests pass. The new tests cover cardinal wheel colours, saturation distance and clamping, centre hue retention, marker/touch round trips, dimmer bounds with a 1% floor, valid comparison-link precedence, preference round trips and corrupt/blocked layout storage. The Windows production build passes.
+The main screen and saved-light sheet have no page horizontal overflow at widths 280, 320, 390 and 1280 pixels. The tested flow produced no unhandled page errors.
 
-Shared-browser checks with a simulated peripheral show one chooser and zero writes on Connect and repeated layout changes. A dimmer tap and keyboard increment each submit one colour/brightness command. Off followed by colour and brightness edits submits only Off; explicit On submits the latest full unscaled RGB/brightness frame. Wheel taps, wheel keyboard edits and palette selections submit through the same session. A synthetic wheel drag with simulated pointer capture submits zero commands during draft, on cancellation or subsequent blur. This verifies application handlers, not a phone's touch or BLE delivery.
+These are software checks with simulated transport. This audit has not published the local changes or tested actual iPhone Bluetooth delivery.
 
-Main-screen screenshots for all three layouts were reviewed at 390 by 844. On/Off end at approximately 713, 705 and 732 pixels for Wheel, Palette and Dimmer with a saved favourite present; saved content below may scroll. At 320 by 640, all three have no horizontal overflow and tested buttons and sliders have at least 44-pixel hit regions. The layout sheet initially focuses its heading, preserves a plain X, shows keyboard focus on Tab, closes on Escape and returns focus to the layout action. Preference restoration keeps the strip disconnected and submits nothing. Actual iPhone/Bluefy usability and physical strip outcomes remain owner checks.
+## Physical evidence and acceptance
 
-### Restrained interface revision, version 1.3.0, 2026-10-22
+The [protocol evidence](../PROTOCOL_EVIDENCE.md) retains the owner's earlier successful Bluefy discovery, colour packets and three-second hold. No new physical results have been recorded for this app. In particular, On and Off packets recovered from the Android app still require confirmation on the owner's strip.
 
-Replaced the rainbow pad with separate native hue and saturation sliders and a flat selected-colour preview. The page uses neutral charcoal, smaller consistent numeric values, quiet swatches and text actions. Power actions sit below presets. No enclosing cards, bottom navigation or Apply were added. The persistent Bluetooth service, protocol, scheduler and storage format are unchanged.
+The earlier error about a missing verified service was reproduced with a simulated bridge returning short EEA0/EE01 UUIDs. UUID normalization fixes that software case; the phone's original raw UUID was not captured, so the cause of that report remains unconfirmed.
 
-All 67 automated tests pass. The Windows production build succeeds. The shared browser's screenshot capture now works; main-screen and Options screenshots were reviewed at phone widths. At 390 by 844 the normal screen fits, and at 320 by 640 the page scrolls without horizontal overflow. Tested button and slider hit regions meet 44 by 44 pixels. Sheets retain their plain X, heading focus, swipe dismissal and focus return.
+After publishing the tested assets, check on the actual iPhone:
 
-With a simulated peripheral, Connect sends zero writes and creates one selection request. Hue and saturation edits submit on release; one keyboard step followed by a separate slider click produces one write per action, without a blur duplicate. Off submits its exact five-byte frame. Subsequent hue and brightness changes submit nothing while Off is requested. On submits the latest selected unscaled RGB and brightness scalar in the full nine-byte frame. Sheet opening and swipe dismissal add no commands or chooser. These results are software checks; Bluefy touch feel and physical LED output remain owner checks.
+- [ ] Open the production HTTPS URL in Bluefy and connect to BJ_LED_M. Confirm no light change on connect.
+- [ ] Select red at 25%, then other colours and brightness levels. Confirm one connection and no repeated chooser.
+- [ ] Confirm physical Off. Edit colour and brightness and verify the strip stays off.
+- [ ] Confirm On applies the newly prepared colour and brightness.
+- [ ] Send a final colour, disconnect and wait. Confirm the light retains the setting after the three-second hold.
+- [ ] Reconnect without sending, then explicitly apply a selection. Confirm no replay.
+- [ ] Reload and confirm preferences restore without sending. Select the device again if Bluefy requests it.
+- [ ] Remove strip power or move out of range. Check loss/timeout feedback and no automatic retry; restore, reconnect and apply explicitly.
+- [ ] Save, rename, replace and delete a favourite. Reopen the Bluefy bookmark and check persistence.
+- [ ] Background and return to Bluefy. Check connection state and no replay.
+- [ ] Check touch cancellation, sheet dismissal, keyboard controls and reduced-motion/transparency settings.
 
-### Open layout and sheet fixes, version 1.2.1, 2026-10-22
-
-Removed the enclosing main glass panel and decorative pill surrounds. The X is now a plain icon with a 44-pixel target. Sheets initially focus their heading and restore focus to their opener; Tab still gives the close button a visible focus outline. A downward touch drag of at least 72 pixels dismisses from the header or noninteractive content at scroll top. Short, horizontal, upward, cancelled and multiple-touch gestures do not dismiss. Fields, sliders, buttons, links and already-scrolled content keep their own interactions.
-
-The browser reproduced the original fault: a 110-pixel downward touch sequence left Options open, and the close button received initial focus with a circular border. The same sequence now dismisses. Native listener tests cover gesture thresholds, cancellation, scrolling, interactive targets and cleanup. All 67 tests and the Windows production build pass. Shared-browser checks confirm all five sheet entry points dismiss, focus returns to their opener, Escape and backdrop dismissal work, and sliders and scrolled content stay open. With a simulated peripheral, opening and dismissing these sheets produces zero writes and retains one device selection. At 320 and 390 pixels wide there is no horizontal overflow and tested buttons meet 44-pixel targets.
-
-These are software and synthetic-touch checks in the desktop QA browser. Actual Bluefy swipe feel and iPhone rendering still require owner confirmation. No new screenshot review or physical LED result is claimed. Bluetooth protocol, session ownership and scheduling are unchanged.
-
-Windows, Node.js 24.19.0. `npm run check` passed 45 tests and built production assets with Vite 7.3.7. Tests use a simulated GATT peripheral and controlled Vitest timers. They do not verify radio delivery or LED output.
-
-Covered: golden colour, Off and full On bytes; floor rounding; invalid RGB and brightness; colour conversions; validated preferences; corrupt or unavailable storage; discovery options; verified write capability; connection without writes; repeated commands using one chooser; fresh GATT discovery after reconnect; no replay; queue spacing and coalescing; Off cancellation and power ordering; last-write hold; in-flight disconnect timing; asynchronous disconnect confirmation; write and connection deadlines; chooser cancellation and denial; link loss; late completion after a new session; disconnected selection; no restoration/subscription writes; favourites add, rename, replace and delete; Off prepares the next On selection.
-
-The desktop browser QA tab used a simulated Web Bluetooth object. Connect generated one chooser request and zero writes. Apply, Off, colour and brightness edits while Off, then On generated exactly three frames. The On frame contained the latest prepared RGB and brightness, with no second chooser. A real browser permission prompt and actual BLE radio were not used in this QA test.
-
-Browser checks at 320-pixel and 390-pixel phone widths, and a 1280-pixel desktop width, found no horizontal overflow. The app loaded without application console errors. Creating a named favourite stored it locally without an additional Bluetooth write. Quick levels and presets have at least 44-pixel touch targets. A keyboard arrow adjusts the hue and saves the new disconnected selection locally.
-
-Production publication succeeded. The public HTTPS root returned HTTP 200 without sign-in, loaded the built application assets, and allowed Bluetooth under the browser's Permissions-Policy. This desktop QA browser exposing Bluetooth is not evidence about Bluefy's actual iPhone launch context. Actual phone and LED checks remain pending below.
-
-## Physical acceptance still required
-
-### Glass interface and direct controls, version 1.2.0
-
-Apply and bottom navigation are removed. The single main screen uses translucent glass styling. Saved lights and Options open as sheets. Connecting still sends nothing; adjust a control or tap On to use the prepared setting. The controller's obsolete Apply method was removed and the prepared-setting test now asserts the full On packet. Protocol encoders, queue timing and connection ownership are unchanged.
-
-All 58 tests pass. Mocked UI checks show one chooser, zero connect writes, automatic colour/brightness submissions on committed edits, no colour updates after Off, and the latest unscaled RGB/brightness in the full On frame. Saved lights and Options open without any extra writes or chooser. At 320 pixels there is no horizontal overflow, and all tested buttons meet 44 by 44 pixels. The QA browser computes the main panel blur at 28 pixels with a translucent background. Opaque CSS fallbacks exist when blur is unavailable or reduced transparency is requested. A new native screenshot capture again timed out; physical Bluefy rendering and LED results remain unverified by this QA browser.
-
-### Mobile interface revision, version 1.1.0
-
-The new Light view uses a wide hue/saturation pad, brightness, quick levels and presets. Saved and More are separate views. Exact colour, device controls and saved-light editing use native dialog sheets. Transport, scheduling, protocol and stored preference formats are unchanged.
-
-All 58 automated tests pass and the Windows production build succeeds. In the shared browser, a mock peripheral returning short EEA0/EE01 UUIDs connects once and sends zero writes during view changes and sheet opening/closing. Apply, Off, prepared edits and On retain the correct command behavior. Saving, renaming and confirmed deletion add no writes. A keyboard brightness change sends exactly once; blurring it to open a sheet adds no duplicate. A colour-pad tap submits one colour write.
-
-At 390 by 844 CSS pixels, presets end at pixel 724 and feedback at 764, above navigation at 777. At 320 pixels wide, no horizontal overflow or button targets below 44 by 44 pixels were found. Smaller viewports may scroll. Native modal focus enters the close control. Screenshot QA was unavailable: two T3 snapshot attempts timed out, the independent HTML capture timed out, and automatic approval review rejected launching a separate headless browser as "blocked by policy". Layout and interaction checks succeeded, but no new screenshot-based visual review is claimed. Actual Bluefy touch and physical LED confirmation remain owner checks.
-
-### Connection error report and version 1.0.1
-
-The owner reported "The selected device does not expose the verified LED service." That error occurs after the service lookup returns. A simulated service reporting `EEA0` instead of its equivalent full 128-bit UUID reproduced the exact message in the real session code. The original comparison accepted only the full textual form. The phone's raw returned UUID was not captured, so short UUID formatting remains the likely explanation for the physical report, not a measured phone result.
-
-Version 1.0.1 normalizes equivalent UUID representations for both EEA0 and EE01 and records the returned identities in diagnostics. The suite now passes 58 tests, including short, zero-padded, mixed-case and compact full UUIDs, rejection of different services and EE02, and exported discovery details. The Windows production build passes. The QA browser also connects to a simulated peripheral returning short `EEA0` / `EE01`, sends nothing on connect, and submits a colour frame only after Apply selection. Retry on the actual phone is pending.
-
-No new physical results have been recorded for this app. The owner's earlier successful colour tests are research background, not new acceptance evidence.
-
-- [ ] Open the deployed production URL in Bluefy on the actual iPhone.
-- [ ] Connect and select BJ_LED_M. Confirm no light change on connect.
-- [ ] Apply red at 25%, then several colours and brightness levels. Confirm one active connection and no repeated chooser.
-- [ ] Physically confirm Off. Edit colour and brightness while Off; confirm the strip stays off.
-- [ ] Physically confirm On restores the newly selected colour and brightness. Record whether the recovered packet works.
-- [ ] Send a final colour, tap Disconnect and wait. Confirm the light retains the last command after the three-second hold.
-- [ ] Reconnect without sending. Confirm no light change, then explicitly apply a selection.
-- [ ] Reload the page. Confirm preferences restore with no command and choose the device again if Bluefy requests it.
-- [ ] Move out of range or remove strip power. Confirm clear loss/timeout feedback and no automatic retry. Restore the strip, reconnect and apply explicitly.
-- [ ] Save, rename, replace and delete a favourite. Revisit the Bluefy bookmark and check persistence.
-- [ ] Background and return to Bluefy. Check honest connection state and no automatic command replay.
-
-For each physical test, record date, iPhone model, iOS version, Bluefy version, controller name, action, visible outcome and any copied diagnostics. Keep power results explicit. If a packet behaves differently, retain the exact bytes and timing and do not substitute another controller's format.
+Record the date, iPhone model, iOS and Bluefy versions, controller name, action, visible output and copied diagnostics. Preserve exact bytes and timing for any unexpected result. Earlier software validation and interface history remain in Git.

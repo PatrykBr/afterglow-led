@@ -1,6 +1,6 @@
 # Afterglow
 
-A new personal RGB strip controller for Bluefy on iPhone. The phone sends binary commands directly to the nearby BJ_LED_M controller. There is no application backend, account system, telemetry, database or cloud Bluetooth relay.
+A personal RGB strip controller for Bluefy on iPhone. The phone sends binary commands directly to the nearby BJ_LED_M controller. There is no application backend, account system, telemetry, database or cloud Bluetooth relay.
 
 The accepted iPhone route is an HTTPS page opened in Bluefy. Safari and an untested home-screen launch are not substitutes. No Mac, Xcode, signing or local iOS build is involved.
 
@@ -31,7 +31,7 @@ See [the short Bluefy guide](docs/IPHONE.md). Open the deployment URL from [the 
 
 Version 1.5 keeps the chosen colour-wheel interface. The palette, large dimmer and layout chooser have been removed. Old layout query parameters and saved layout choices are ignored; your stored colour, brightness and favourites keep their existing schema and origin. The wheel combines hue and saturation in one touch surface.
 
-There are no enclosing cards, Apply action or bottom navigation. Saved lights and Save this light are labelled actions below power. Up to three saved combinations are available as direct shortcuts. Edit colour offers labelled hue/saturation sliders, named quick colours, Hex and RGB fields. Help and diagnostics are behind Options. Sheets keep the session and close with their plain X, Escape, backdrop tap or downward swipe from noninteractive content at the top. See [the design research](docs/UX_RESEARCH.md) and [Bun tooling decisions](docs/BUN_TOOLCHAIN.md).
+There are no enclosing cards, Apply action or bottom navigation. Saved lights and Save this light are labelled actions below brightness. Up to three saved combinations are available as direct shortcuts. Edit colour offers labelled hue/saturation sliders, named quick colours, Hex and RGB fields. Help and diagnostics are behind Options. Sheets keep the session and close with their plain X, Escape, backdrop tap or downward swipe from noninteractive content at the top. Cancelled drags keep a local selection without sending on later blur. See [the design research](docs/UX_RESEARCH.md) and [Bun tooling decisions](docs/BUN_TOOLCHAIN.md).
 
 On and Off are explicit command requests. The strip does not acknowledge its physical power state. After requesting Off, edits prepare the next On selection. A reload restores settings and favourites, with power treated as unknown; it sends nothing.
 

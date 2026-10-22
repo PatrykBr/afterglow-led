@@ -1,7 +1,7 @@
 import { useState, type CSSProperties } from 'react';
 import type { LightingController } from '../controller';
 import { hex, type Settings } from '../domain/lighting';
-import { favouriteName, type Favourite } from '../persistence/preferences';
+import type { Favourite } from '../persistence/preferences';
 import { Icon } from './Icon';
 
 export function SavedLights({
@@ -22,7 +22,7 @@ export function SavedLights({
       <div className="view-heading">
         <p>Your colours and brightness.</p>
         <button
-          className="icon-button bordered"
+          className="icon-button"
           aria-label="Save current selection"
           onClick={() => onEdit()}
         >
@@ -106,14 +106,6 @@ export function FavouriteEditor({
   const [deleting, setDeleting] = useState(false);
   const selection = app.getSnapshot().preferences.selected;
   const settings = favourite?.settings || selection;
-  const checkedName = () => {
-    try {
-      return favouriteName(name);
-    } catch (error) {
-      setError((error as Error).message);
-      return undefined;
-    }
-  };
   return (
     <div className="favourite-editor">
       <div className="saved-preview" style={{ '--preview': hex(settings.rgb) } as CSSProperties}>
@@ -124,11 +116,9 @@ export function FavouriteEditor({
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          const valid = checkedName();
-          if (!valid) return;
           const done = favourite
-            ? app.renameFavourite(favourite.id, valid)
-            : app.saveFavourite(valid);
+            ? app.renameFavourite(favourite.id, name)
+            : app.saveFavourite(name);
           if (done) onDone();
           else setError(app.getSnapshot().message);
         }}
@@ -156,8 +146,8 @@ export function FavouriteEditor({
           <button
             className="secondary-button full-width"
             onClick={() => {
-              const valid = checkedName();
-              if (valid && app.saveFavourite(valid, favourite.id)) onDone();
+              if (app.saveFavourite(name, favourite.id)) onDone();
+              else setError(app.getSnapshot().message);
             }}
           >
             Replace with current colour &amp; brightness

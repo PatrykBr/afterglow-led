@@ -25,7 +25,7 @@ Bun's native timer API does not implement the async advancement used by the life
 
 Production is still static HTTPS assets. Bun runs on the Windows development computer; it is not installed on the iPhone or required by the hosting request path. Bluefy owns Bluetooth permissions and the browser talks directly to the strip. No database, Redis, server API, native executable distribution, cloud Bluetooth relay or unattended scheduler was introduced.
 
-The connected Sites publishing helpers are host tooling and may use the Node runtime supplied by the coding environment. They package the already-built `dist` directory; this does not add a Node dependency to the app's development or production runtime.
+Vercel's GitHub integration checks out the committed source and builds the static `dist` directory. The deployment does not require a locally authenticated Vercel CLI.
 
 Browser targeting is not a guarantee of a particular old Safari syntax level. The built production page must still be checked on the actual iPhone/Bluefy after this migration. A modern bundler cannot add missing Web Bluetooth access.
 

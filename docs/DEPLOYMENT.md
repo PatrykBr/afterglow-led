@@ -22,7 +22,7 @@ The build commands select Bun 1.4.4 explicitly and prepend its installation dire
 
 Vercel minifies `vercel.json` before invoking the build command. The build restores that file from Git HEAD before running the formatting checks, so validation checks the committed source rather than Vercel's generated copy.
 
-Use the public production URL in Bluefy. Preview URLs may require Vercel authentication. A local CLI deployment uses `vercel link`, verifies the linked project, then `vercel --prod`. CLI login is separate from the connected Vercel tool.
+Use the public production URL in Bluefy. Publish updates by pushing reviewed commits to `main`; the build uses the Git checkout to validate the tracked configuration. Preview URLs may require Vercel authentication.
 
 After publication, verify the HTTPS page, all hashed assets and the Bluetooth permission header. Then complete the [physical acceptance checklist](VALIDATION.md) on the actual iPhone.
 

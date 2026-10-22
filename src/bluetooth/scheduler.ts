@@ -126,7 +126,7 @@ export class CommandScheduler {
           this.diagnostics.add('write-uncertain', message);
           this.stop();
           this.fault(
-            'The last command may have reached the strip. Reconnect and apply your setting when ready. No automatic retry was made.',
+            'The command may have reached the strip. Check the lights before reconnecting. No automatic retry was made.',
           );
         }
         break;

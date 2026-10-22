@@ -39,7 +39,7 @@ describe('user intent and restoration', () => {
     p.app.select({ rgb: [0, 255, 0], brightness: 50 });
     await p.session.connect();
     expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
-    expect(p.app.getSnapshot().message).toBe('Adjust a control or tap On to use this setting.');
+    expect(p.app.getSnapshot().message).toBe('Adjust a control or tap On to send this setting.');
     p.app.power('on');
     await clock.tickAsync(0);
     expect(packetHex(p.characteristic.writeValueWithoutResponse.mock.calls[0][0])).toBe(
@@ -93,7 +93,7 @@ describe('user intent and restoration', () => {
     expect(p.app.getSnapshot().message).toContain('Off command sent');
     p.server.disconnect();
     await p.session.connect();
-    expect(p.app.getSnapshot().message).toBe('Ready for next On. Colour changes are held.');
+    expect(p.app.getSnapshot().message).toBe('Tap On to send this setting.');
     expect(p.app.getSnapshot().requestedPower).toBe('off');
     expect(p.characteristic.writeValueWithoutResponse).toHaveBeenCalledTimes(1);
   });

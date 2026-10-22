@@ -40,21 +40,21 @@ export function MoreView({
         <summary>Using Afterglow in Bluefy</summary>
         <div className="help-content">
           <p>
-            Tap Connect and select BJ_LED_M. Connection leaves the light unchanged. Adjust colour or
-            brightness to send a change, or tap On to use the prepared colour and brightness.
+            Tap Connect and choose BJ_LED_M. Connecting leaves the light unchanged. Adjust a control
+            or tap On to send the selected colour and brightness.
           </p>
           <p>
-            Colour and brightness changes send on release while connected. After Off, edits prepare
-            the next On setting. The highlighted power action is your last request, not a reading
-            from the strip.
+            Controls send on release while connected. After Off, edits wait until you tap On. The
+            power highlight shows your last request. The strip does not report its power state.
           </p>
           <p>
-            Bookmark this URL in Bluefy. A reload may require selection again. Reconnect reuses the
-            selected device where possible and never replays commands.
+            Bookmark this page in Bluefy. Reloading may require choosing the device again. Reconnect
+            reuses the selected device when possible and sends no lighting commands.
           </p>
           <p>
-            Keep Bluefy open while controlling the strip. Use Your strip to disconnect and wait for
-            Not connected before leaving. Backgrounding or locking iPhone may interrupt Bluetooth.
+            Keep Bluefy open while controlling the strip. To disconnect, open Your strip and wait
+            for Not connected before leaving. Switching apps or locking the phone may interrupt
+            Bluetooth.
           </p>
           <a href="https://bluefy.app/guide.html" target="_blank" rel="noreferrer">
             Bluefy connection guide
@@ -65,33 +65,27 @@ export function MoreView({
         <summary>Connection problems</summary>
         <div className="help-content">
           <p>
-            Check Bluetooth is enabled and Bluefy has permission in iPhone Settings. Keep the strip
-            powered and nearby. Close BojiaLed or other connected controllers.
+            Enable Bluetooth and allow Bluefy to use it in iPhone Settings. Keep the strip powered
+            and nearby. Close BojiaLed or other apps connected to it.
           </p>
           <p>
-            After a timeout, a command may have reached the strip. Check the light, reconnect, then
-            apply explicitly. Nothing is retried automatically.
+            After a timeout, a command may have reached the strip. Check the light before
+            reconnecting and sending again. Commands are never retried automatically.
           </p>
-          <p>
-            Open the HTTPS URL in Bluefy. Safari and untested home-screen launches may not provide
-            Bluetooth access.
-          </p>
+          <p>Open the HTTPS site in Bluefy. Safari may not provide Bluetooth access.</p>
         </div>
       </details>
       <details className="help diagnostics">
         <summary>Diagnostics &amp; protocol notes</summary>
         <div className="help-content">
           <p>
-            Verified channel: EEA0 / EE01. Write spacing: 80 ms. Normal disconnect hold: 3 seconds.
-            No device state is read.
+            The app writes to EEA0 / EE01 and waits at least 80 ms between commands. Disconnecting
+            keeps the connection open for 3 seconds after the last command.
           </p>
-          <p>
-            On and Off packets came from the Android app and still need physical confirmation.
-            Without-response writes are submissions, not device acknowledgements.
-          </p>
+          <p>The strip does not confirm command delivery. Check the light after sending.</p>
           {state.lastSubmitted && (
             <p>
-              Last submitted: {hex(state.lastSubmitted.rgb)} at {state.lastSubmitted.brightness}%.
+              Last colour sent: {hex(state.lastSubmitted.rgb)} at {state.lastSubmitted.brightness}%.
             </p>
           )}
           <button className="secondary-button" onClick={() => void copy()}>
@@ -99,7 +93,7 @@ export function MoreView({
           </button>
           {history && (
             <label className="diagnostic-export">
-              {copied ? 'Exported history' : 'Select and copy this history'}
+              {copied ? 'Diagnostics' : 'Select and copy the text'}
               <textarea
                 readOnly
                 value={history}
@@ -113,9 +107,7 @@ export function MoreView({
       <p className="about">
         Afterglow <span>Version 1.5.1</span>
       </p>
-      <p className="fine-print">
-        Settings stay in this browser. No account, cloud control or background schedules.
-      </p>
+      <p className="fine-print">Settings and saved lights stay in this browser.</p>
     </section>
   );
 }

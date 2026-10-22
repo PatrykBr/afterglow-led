@@ -715,17 +715,6 @@ input[type='range']::-moz-range-thumb {
 .device-details > .text-button {
   margin-top: 5px;
 }
-.view-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin: 0 0 20px;
-}
-.view-heading p {
-  font-size: 13px;
-  color: var(--muted);
-}
 .current-selection {
   display: flex;
   align-items: center;

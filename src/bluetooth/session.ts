@@ -16,10 +16,9 @@ export type BluetoothAccess = Pick<Bluetooth, 'requestDevice'>;
 
 export function explainConnectionError(error: unknown): string {
   const name = error instanceof Error ? error.name : '';
-  if (name === 'NotFoundError')
-    return 'No device selected. Tap Connect to choose BJ_LED_M when you are ready.';
+  if (name === 'NotFoundError') return 'No device selected. Tap Connect to choose BJ_LED_M.';
   if (name === 'NotAllowedError' || name === 'SecurityError')
-    return 'Bluetooth permission was denied. Allow Bluetooth for Bluefy in iPhone Settings, then try Connect again.';
+    return 'Bluetooth permission was denied. Allow Bluetooth for Bluefy in iPhone Settings, then tap Connect.';
   if (name === 'DeadlineError')
     return 'Connection timed out. Keep the strip powered and nearby, close other controllers, then try Reconnect.';
   if (name === 'NetworkError')
@@ -67,7 +66,7 @@ export class BluetoothSession {
     if (!bluetooth) {
       this.patch({
         error:
-          'Open this HTTPS page in Bluefy on your iPhone. This browser does not expose Bluetooth access.',
+          'Open the HTTPS site in Bluefy on your iPhone. This browser cannot access Bluetooth.',
       });
       return;
     }
@@ -127,7 +126,7 @@ export class BluetoothSession {
     );
     if (serviceUuid !== SERVICE)
       throw new Error(
-        'The selected device does not expose the verified LED service. Copy diagnostics for troubleshooting.',
+        'This device does not support the required LED service. Copy diagnostics for troubleshooting.',
       );
     const characteristic = await service.getCharacteristic(CHARACTERISTIC);
     if (generation !== this.generation) throw new CancelledError();
@@ -145,9 +144,7 @@ export class BluetoothSession {
       !characteristic.properties.writeWithoutResponse ||
       typeof characteristic.writeValueWithoutResponse !== 'function'
     ) {
-      throw new Error(
-        'This controller does not provide the verified LED write channel. Choose BJ_LED_M.',
-      );
+      throw new Error('This device does not support LED writes. Choose BJ_LED_M.');
     }
     return characteristic;
   }
@@ -194,9 +191,7 @@ export class BluetoothSession {
 
   private onLost = () => {
     if (this.snapshot.state === 'disconnecting' || this.snapshot.state === 'disconnected') return;
-    this.fail(
-      'Connection lost. Your selection is saved here. Tap Reconnect, then apply it when ready.',
-    );
+    this.fail('Connection lost. Tap Reconnect. Your selection is unchanged.');
   };
   private fail(message: string) {
     this.generation++;

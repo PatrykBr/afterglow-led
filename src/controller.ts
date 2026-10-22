@@ -32,7 +32,7 @@ export class LightingController {
       preferences,
       session: session.getSnapshot(),
       requestedPower: 'unknown',
-      message: 'Connect when ready. Your selection is saved here.',
+      message: 'Connect to send this setting.',
       storageWarning: warning,
     };
     session.subscribe(() => {
@@ -42,8 +42,8 @@ export class LightingController {
         message:
           sessionState.state === 'connected' && this.snapshot.session.state !== 'connected'
             ? this.snapshot.requestedPower === 'off'
-              ? 'Ready for next On. Colour changes are held.'
-              : 'Adjust a control or tap On to use this setting.'
+              ? 'Tap On to send this setting.'
+              : 'Adjust a control or tap On to send this setting.'
             : this.snapshot.message,
       });
     });
@@ -76,10 +76,9 @@ export class LightingController {
       )
         this.persist({ ...this.snapshot.preferences, selected });
       if (!commit) return;
-      if (this.snapshot.requestedPower === 'off')
-        this.notify('Ready for next On. Colour changes are held.');
+      if (this.snapshot.requestedPower === 'off') this.notify('Tap On to send this setting.');
       else if (this.snapshot.session.state !== 'connected')
-        this.notify('Connect when ready. Your selection is saved here.');
+        this.notify('Connect to send this setting.');
       else void this.send({ kind: 'colour', settings: selected });
     } catch (error) {
       this.notify((error as Error).message);
@@ -110,7 +109,7 @@ export class LightingController {
     if (outcome.status === 'submitted')
       this.notify(
         command.kind === 'off'
-          ? 'Off command sent. Edits prepare your next On.'
+          ? 'Off command sent. Tap On to send later edits.'
           : command.kind === 'on'
             ? 'On command sent.'
             : 'Colour and brightness sent.',
@@ -121,7 +120,7 @@ export class LightingController {
       );
     else if (outcome.status === 'failed')
       this.notify(outcome.message || 'Could not send the command.');
-    else this.notify('Pending command cancelled. Your selection is still saved here.');
+    else this.notify('Pending command cancelled. Your selection is unchanged.');
   }
   saveFavourite(name: string, id?: string) {
     try {

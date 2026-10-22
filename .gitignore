@@ -4,7 +4,6 @@ dist/
 *.tar.gz
 .env*
 !.env.example
-.sites/
 .DS_Store
 coverage/
 .vercel/

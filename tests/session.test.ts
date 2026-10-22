@@ -37,7 +37,7 @@ describe('session and command lifecycle', () => {
       p.service.uuid = uuid;
       await p.session.connect();
       expect(p.session.getSnapshot().state).toBe('disconnected');
-      expect(p.session.getSnapshot().error).toContain('does not expose the verified LED service');
+      expect(p.session.getSnapshot().error).toContain('does not support the required LED service');
       expect(p.service.getCharacteristic).not.toHaveBeenCalled();
       expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
     },
@@ -47,7 +47,7 @@ describe('session and command lifecycle', () => {
     p.service.uuid = 'EEA0';
     p.characteristic.uuid = 'EE02';
     await p.session.connect();
-    expect(p.session.getSnapshot().error).toContain('verified LED write channel');
+    expect(p.session.getSnapshot().error).toContain('does not support LED writes');
     expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
   });
   it('records the bridge UUIDs in exported diagnostics', async () => {
@@ -354,7 +354,7 @@ describe('session and command lifecycle', () => {
     const p = peripheral();
     p.characteristic.properties.writeWithoutResponse = false;
     await p.session.connect();
-    expect(p.session.getSnapshot().error).toContain('verified LED write channel');
+    expect(p.session.getSnapshot().error).toContain('does not support LED writes');
     expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
   });
 });

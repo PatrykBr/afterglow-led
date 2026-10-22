@@ -72,7 +72,7 @@ export function PowerControls({
         <h2>Power</h2>
         <small>
           {state.requestedPower === 'unknown'
-            ? 'No request this visit'
+            ? 'No power request'
             : `Last request: ${state.requestedPower === 'on' ? 'On' : 'Off'}`}
         </small>
       </div>
@@ -117,14 +117,14 @@ export function DeviceDetails({
         </span>
         <div>
           <strong>{session.deviceName || 'BJ_LED_M'}</strong>
-          <p>Your Bluetooth LED strip</p>
+          <p>Bluetooth LED strip</p>
         </div>
       </div>
       <p className="sheet-description">
         {connected
-          ? 'Connected for this page session. The strip does not report its current power or colour.'
+          ? 'Connected. The strip does not report its power or colour.'
           : session.state === 'disconnecting'
-            ? 'Waiting for the last write to settle before releasing the connection.'
+            ? 'Waiting for the last command before disconnecting.'
             : 'Keep the strip powered and nearby. Connecting leaves the lights unchanged.'}
       </p>
       <dl className="device-facts">
@@ -183,8 +183,8 @@ export function DeviceDetails({
         </button>
       )}
       <p className="fine-print">
-        For a normal disconnect, keep this page open until the status changes to Not connected. A
-        reload may require device selection again.
+        Keep this page open until the status says Not connected. Reloading may require choosing the
+        device again.
       </p>
     </div>
   );

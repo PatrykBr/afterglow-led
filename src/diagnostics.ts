@@ -10,7 +10,7 @@ export class Diagnostics {
       {
         app: 'Afterglow 1.5.1',
         userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'test',
-        note: 'Commands are submitted without device acknowledgement. No device identifiers are recorded.',
+        note: 'The strip does not confirm command delivery. Device identifiers are not recorded.',
         entries: this.entries,
       },
       null,

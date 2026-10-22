@@ -19,16 +19,6 @@ export function SavedLights({
 }) {
   return (
     <section className="saved-view" aria-label="Saved colour settings">
-      <div className="view-heading">
-        <p>Your colours and brightness.</p>
-        <button
-          className="icon-button"
-          aria-label="Save current selection"
-          onClick={() => onEdit()}
-        >
-          <Icon name="plus" />
-        </button>
-      </div>
       <div className="current-selection">
         <span className="colour-swatch" style={{ background: hex(selected.rgb) }} />
         <div>
@@ -46,12 +36,8 @@ export function SavedLights({
           <span className="empty-symbol">
             <Icon name="saved" size={30} />
           </span>
-          <h3>Save a light you love</h3>
-          <p>
-            Keep a colour and brightness together.
-            <br />
-            Name it for the moment you use it.
-          </p>
+          <h3>No saved lights</h3>
+          <p>Save a colour and brightness, then give it a name.</p>
           <button className="primary-button" onClick={() => onEdit()}>
             Save current selection
           </button>
@@ -85,8 +71,8 @@ export function SavedLights({
         </div>
       )}
       <p className="fine-print">
-        Saved only in this browser. Selecting a saved light sends it while connected, unless Off was
-        requested.
+        Saved in this browser. Selecting a saved light sends it while connected. After Off, tap On
+        to send it.
       </p>
     </section>
   );
@@ -126,7 +112,7 @@ export function FavouriteEditor({
         <label htmlFor="favourite-name">Name</label>
         <input
           id="favourite-name"
-          placeholder="e.g. Reading, movie night…"
+          placeholder="Reading or movie night"
           value={name}
           maxLength={40}
           required
@@ -177,7 +163,7 @@ export function FavouriteEditor({
           )}
         </>
       )}
-      <p className="fine-print">Saving or editing a name does not change the strip.</p>
+      <p className="fine-print">Saving changes here does not change the strip.</p>
     </div>
   );
 }

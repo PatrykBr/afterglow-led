@@ -173,7 +173,7 @@ export function ExactColour({
   return (
     <div className="exact-colour">
       <p className="sheet-description">
-        Fine-tune your selection. Changes send on release while connected, unless Off was requested.
+        Changes send on release while connected. After Off, tap On to send them.
       </p>
       <div className="precision-slider">
         <div className="section-heading">

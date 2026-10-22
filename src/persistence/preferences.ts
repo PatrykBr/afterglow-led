@@ -11,8 +11,7 @@ const defaults = (): Preferences => ({
 });
 export function favouriteName(value: string) {
   const name = value.trim();
-  if (!name || name.length > 40)
-    throw new Error('Give your favourite a name from 1 to 40 characters.');
+  if (!name || name.length > 40) throw new Error('Enter a name from 1 to 40 characters.');
   return name;
 }
 
@@ -44,8 +43,7 @@ export class PreferenceStorage {
     } catch {
       return {
         preferences: defaults(),
-        warning:
-          'Saved settings could not be loaded. You can still use the controls; nothing was sent to the strip.',
+        warning: 'Saved settings could not be loaded. The controls still work.',
       };
     }
   }
@@ -55,7 +53,7 @@ export class PreferenceStorage {
       if (!storage) throw new Error('Storage unavailable');
       storage.setItem(STORAGE_KEY, JSON.stringify(preferences));
     } catch {
-      return 'This browser could not save your settings. They will stay available until you close or reload this page.';
+      return 'This browser could not save your settings. Closing or reloading this page will lose these changes.';
     }
   }
 }

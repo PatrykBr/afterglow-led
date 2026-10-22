@@ -26,7 +26,7 @@ export function ColourWheel({ app, settings, hue, onHueChange }: ColourWheelProp
       draft(next.hue, next.saturation);
     },
     () => app.commit(),
-    () => app.notify('Colour prepared. Adjust a control or tap On to send it.'),
+    () => app.notify('Colour selected. Adjust a control or tap On to send it.'),
   );
   return (
     <div className="wheel-stage">

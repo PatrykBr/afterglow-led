@@ -1,27 +1,37 @@
-# Independent deployment
+# Hosting and deployment
 
-This app has its own Sites project and source repository. It has no dependency on the earlier experimental site.
+## Vercel
 
-Project ID: `appgprj_6ad931265480819183506ff58bd7f9f4`.
+Source: [PatrykBr/afterglow-led](https://github.com/PatrykBr/afterglow-led), a private GitHub repository. The cleanup is committed as `dd1cf0a`; Vercel configuration is committed as `61a47e9`.
 
-Live URL: **https://afterglow-led.gardenmelon35.chatgpt.site**.
+Vercel deployment is being set up in the connected `patrykbrs-projects` team. A new production URL has not yet been verified. The existing public site below remains available.
 
-Publication succeeded on 2026-10-21. The site is public and opens without ChatGPT sign-in, as required for account-free use in Bluefy. Opening the production page in the QA browser returned HTTP 200, a secure context and a Bluetooth Permissions-Policy that allowed this page to use Bluetooth. This verifies hosting, not actual iPhone BLE access.
+The repository-root `vercel.json` selects a static build:
 
-The initial tested application source commit is `c022d30081ea078db852a6471ad2b71c179aeecb`. Initial saved version: `appgprj_6ad931265480819183506ff58bd7f9f4~appgver_025ee1a9a53081918b0d510ddd157068`. Public deployment: `appgdep_6ad935b8cb348191bf16c3e33e836065`. These identifiers record the initial publication, not the current local build.
+- Framework: Other.
+- Install: `bun ci`.
+- Build: `bun run check`, including formatting, types, tests and production bundling.
+- Output: `dist`.
+- Headers: `Permissions-Policy: bluetooth=(self)` and `X-Content-Type-Options: nosniff`.
 
-The fresh hosted source repository is `https://git.chatgpt-team.site/77e8427c-4b69-4ebf-a960-50470b171b5a/appgprj_6ad931265480819183506ff58bd7f9f4.git`. Its access is separate from the public application URL. Use the Sites source workflow for short-lived repository authorization. This directory also contains the complete local Git repository and dependency lockfile.
+Use Bun 1.4.4 or a compatible newer version. The app needs no backend, functions, database or runtime secrets.
 
-## Publish an update from Windows
+Once the GitHub repository is linked to Vercel, pushes to `main` can build and publish automatically. Use the public production URL in Bluefy. Preview URLs may require Vercel authentication. A local CLI deployment uses `vercel link`, verifies the linked project, then `vercel --prod`. CLI login is separate from the connected Vercel tool.
 
-The current interface uses the colour wheel, with power above it. Old layout query parameters are ignored. Query parameters do not select an older release. This audit has not published the local changes; run the steps below to publish the tested build.
+After publication, verify the HTTPS page, all hashed assets and the Bluetooth permission header. Then complete the [physical acceptance checklist](VALIDATION.md) on the actual iPhone.
 
-1. Open this source repository in Codex with the Sites plugin connected to the owner account.
-2. Run `bun ci` if needed and `bun run check`. The normal Windows commands do not require a Mac.
-3. Ask Sites to publish this existing project, retaining the project ID in `.openai/hosting.json`. The Sites source workflow commits and pushes source, packages the matching `dist` directory with the hosting manifest, then deploys that saved version.
-4. Retain the returned source commit, version, production URL and terminal deployment result. Do not call create_site again for this project.
-5. Open the resulting URL in Bluefy. Re-test the relevant checklist in `VALIDATION.md` after transport changes.
+## Saved preferences when changing hosts
 
-Source credentials are short-lived and should be entered only through the supported Sites helper. They do not belong in a shell command, README, Git remote, committed file or client bundle. No runtime credential is needed by the app.
+Preferences belong to the browser and site origin. A new Vercel URL has separate local storage and Bluetooth permissions. Existing favourites do not transfer automatically. Keep the old URL available while recreating any saved lights you need, and update the Bluefy bookmark after checking the new site.
 
-For another static host, run `bun run build` and upload all files from `dist` at the website root. Serve over HTTPS and allow the `bluetooth` Permissions-Policy for the site itself. The page must open as a top-level page in Bluefy. Do not embed it in a cross-origin frame that blocks Bluetooth.
+## Previous Sites deployment
+
+The previous URL is [afterglow-led.gardenmelon35.chatgpt.site](https://afterglow-led.gardenmelon35.chatgpt.site). Initial publication on 2026-10-21 was public and passed desktop HTTPS and Bluetooth-policy checks. This does not establish actual iPhone BLE delivery.
+
+The archived Sites identity is `appgprj_6ad931265480819183506ff58bd7f9f4`, retained in `.openai/hosting.json`. The `sites` Git remote records its original source repository; `origin` now points to GitHub.
+
+Initial tested source: `c022d30081ea078db852a6471ad2b71c179aeecb`.
+Initial saved version: `appgprj_6ad931265480819183506ff58bd7f9f4~appgver_025ee1a9a53081918b0d510ddd157068`.
+Initial deployment: `appgdep_6ad935b8cb348191bf16c3e33e836065`.
+
+The Vercel migration does not delete or republish this older deployment. No source credentials belong in Git, documentation or client assets.

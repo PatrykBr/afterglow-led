@@ -52,7 +52,7 @@ See [architecture decisions](docs/ARCHITECTURE.md), [protocol evidence](PROTOCOL
 
 ## Maintenance and hosting
 
-The app is static. Vercel serves the built `dist` directory over HTTPS, with source in the private [GitHub repository](https://github.com/PatrykBr/afterglow-led). The tracked `vercel.json` sets installation, validation/build, output and Bluetooth response headers. No API keys or production environment variables are required by the app. See [the deployment record](docs/DEPLOYMENT.md) for the live URL and publication workflow.
+The app is static. Vercel is configured to serve the built `dist` directory over HTTPS, with source in the private [GitHub repository](https://github.com/PatrykBr/afterglow-led). The tracked `vercel.json` sets installation, validation/build, output and Bluetooth response headers. No API keys or production environment variables are required by the app. See [the deployment record](docs/DEPLOYMENT.md) for the deployment status, live URL and publication workflow.
 
 After a change, use `bun install` if dependency declarations changed, then commit `bun.lock`. For an unchanged manifest use `bun ci`. Run `bun run check` and publish the complete `dist` directory from the tested source commit. Keep HTML fresh and cache content-hashed assets normally. The app has no service worker or persistent offline cache to hide updates. `bun run test:watch`, `bun run test:coverage`, `bun run typecheck` and `bun run format` are available separately.
 

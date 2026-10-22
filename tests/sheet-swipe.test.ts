@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'bun:test';
 import { attachSheetSwipe } from '../src/components/sheet-swipe';
 
 // Exercise the native listener boundary, including scroll/default cancellation.
@@ -11,7 +11,9 @@ class Tray extends EventTarget {
     setProperty: (key: string, value: string) => this.properties.set(key, value),
     removeProperty: (key: string) => this.properties.delete(key),
   };
-  closest() { return this.interactive; }
+  closest() {
+    return this.interactive;
+  }
   touch(type: string, x: number, y: number, count = 1) {
     const event = new Event(type, { cancelable: true });
     const touch = { identifier: 1, clientX: x, clientY: y };
@@ -39,7 +41,7 @@ describe('sheet swipe dismissal', () => {
     expect(tray.properties.get('--sheet-drag')).toBe('90px');
     expect(dismiss).not.toHaveBeenCalled();
     tray.touch('touchend', 104, 190);
-    expect(dismiss).toHaveBeenCalledOnce();
+    expect(dismiss).toHaveBeenCalledTimes(1);
     expect(tray.properties.size).toBe(0);
   });
   it('returns a short drag to its starting position', () => {
@@ -51,7 +53,10 @@ describe('sheet swipe dismissal', () => {
     expect(tray.properties.size).toBe(0);
     expect(tray.dataset.dragging).toBeUndefined();
   });
-  it.each([[190, 110], [100, 10]])('leaves horizontal and upward gestures to the browser (%s,%s)', (x, y) => {
+  it.each([
+    [190, 110],
+    [100, 10],
+  ])('leaves horizontal and upward gestures to the browser (%s,%s)', (x, y) => {
     const { tray, dismiss } = setup();
     tray.touch('touchstart', 100, 100);
     expect(tray.touch('touchmove', x, y).defaultPrevented).toBe(false);
@@ -75,7 +80,7 @@ describe('sheet swipe dismissal', () => {
     tray.touch('touchend', 100, 220);
     expect(dismiss).not.toHaveBeenCalled();
   });
-  it.each(['touchcancel', 'multitouch'])('resets without dismissing on %s', reason => {
+  it.each(['touchcancel', 'multitouch'])('resets without dismissing on %s', (reason) => {
     const { tray, dismiss } = setup();
     tray.touch('touchstart', 100, 100);
     tray.touch('touchmove', 100, 200);

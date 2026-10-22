@@ -1,4 +1,8 @@
-# Design direction, version 1.4
+# Design direction, version 1.5
+
+The owner chose the colour wheel. It is now the sole layout: one large hue/saturation wheel, brightness with quick levels, explicit power actions and saved colours. The layout chooser, palette layout and dimmer layout are removed. Exact RGB, separate hue/saturation controls and named quick colours remain in Edit colour. No Apply button, bottom navigation or enclosing cards are added. Existing settings and favourites keep their storage format.
+
+## Previous comparison, version 1.4
 
 The owner asked for more options and research into established lighting apps. The current plan and sources are in [UX_RESEARCH.md](UX_RESEARCH.md). Three layouts change the primary interaction: a direct colour wheel, a named palette on a light surface, and a large dimmer. Shared brightness, power and saved actions use the same controller. The noninteractive colour disc and equal-weight main hue/saturation sliders are removed. A visible layout chooser allows comparison within the active session. These are alternatives for owner evaluation, not a claim of measured usability superiority.
 

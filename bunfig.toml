@@ -1,0 +1,9 @@
+[test]
+root = "./tests"
+coverageReporter = ["text", "lcov"]
+coverageDir = "./coverage"
+coveragePathIgnorePatterns = ["**/tests/**", "**/scripts/**", "**/node_modules/**"]
+
+[fmt]
+printWidth = 100
+singleQuote = true

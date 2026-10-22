@@ -10,7 +10,7 @@ Service and characteristic identities are compared after UUID normalization. Equ
 
 ## Intent and delivery
 
-Selected RGB and brightness, requested power, last submitted settings and connection state are separate. Only selection and favourites are persisted. Requested power starts unknown on every page load because it is not a device reading. While Off is requested, all colour interactions prepare settings locally. On explicitly includes the current selection. Apply after Off is labelled Turn on & apply.
+Selected RGB and brightness, requested power, last submitted settings and connection state are separate. Only selection and favourites are persisted. Requested power starts unknown on every page load because it is not a device reading. While Off is requested, all colour interactions prepare settings locally. On explicitly includes the current selection. There is no Apply action.
 
 One scheduler serializes writes, leaves at least 80 ms after a completed write, and replaces only trailing unsent colour work. Off removes all unsent colour jobs. It preserves the order of power requests and cannot unsend an in-flight browser write. The queue is limited to 40 pending requests; excess input gets feedback instead of silently dropping power commands. The UI sends slider values on release, keyboard release or blur, once per edit. It does not continuously stream drag updates.
 
@@ -25,3 +25,7 @@ Normal disconnect stops new work, cancels pending jobs, waits for an in-flight b
 The local schema has version 1, validated selected settings and at most 30 uniquely identified favourites. Names have 1 to 40 characters. Invalid, inaccessible or full storage produces a notice and leaves in-memory controls usable. No saved state can trigger transport work.
 
 The HTTPS host serves assets. All Bluetooth work stays in the phone browser. There is no backend or service worker, no account-dependent favourites and no background scheduling claim. The bounded diagnostic log is kept only in page memory and exported when requested.
+
+## Toolchain and selected interface
+
+The owner chose the colour wheel. The alternative views, layout state and chooser are removed. Existing lighting preferences retain their version 1 schema. Bun 1.4.4 owns installation, scripts, development serving, production bundling, native type checking, formatting, tests and coverage. Test-only async fake timers preserve lifecycle timing semantics. See BUN_TOOLCHAIN.md for implementation and runtime boundaries.

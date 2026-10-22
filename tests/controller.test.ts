@@ -1,48 +1,77 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { installClock, type TestClock } from './clock';
+let clock: TestClock;
+import { afterEach, beforeEach, describe, expect, it, vi } from 'bun:test';
 import { LightingController } from '../src/controller';
 import { PreferenceStorage } from '../src/persistence/preferences';
 import { DEFAULT_SETTINGS } from '../src/domain/lighting';
 import { peripheral } from './peripheral';
 import { packetHex } from '../src/protocol/bojia';
 
-beforeEach(() => { vi.useFakeTimers(); });
-afterEach(() => { vi.useRealTimers(); });
+beforeEach(() => {
+  clock = installClock();
+});
+afterEach(() => {
+  clock.uninstall();
+});
 const setup = () => {
-  const p = peripheral(); const storage = new PreferenceStorage(() => ({ getItem: () => JSON.stringify({ version: 1, selected: DEFAULT_SETTINGS, favourites: [] }), setItem: vi.fn() }));
+  const p = peripheral();
+  const storage = new PreferenceStorage(() => ({
+    getItem: () => JSON.stringify({ version: 1, selected: DEFAULT_SETTINGS, favourites: [] }),
+    setItem: vi.fn(),
+  }));
   return { ...p, app: new LightingController(p.session, storage, p.diagnostics) };
 };
 
 describe('user intent and restoration', () => {
   it('restoration, subscriptions and connect send no lighting commands', async () => {
-    const p = setup(); const unsubscribe = p.app.subscribe(() => {}); unsubscribe();
-    p.app.subscribe(() => {}); await p.session.connect(); await vi.advanceTimersByTimeAsync(1000);
+    const p = setup();
+    const unsubscribe = p.app.subscribe(() => {});
+    unsubscribe();
+    p.app.subscribe(() => {});
+    await p.session.connect();
+    await clock.tickAsync(1000);
     expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
     expect(p.app.getSnapshot().requestedPower).toBe('unknown');
   });
   it('allows disconnected edits and uses explicit On for a prepared setting after connection', async () => {
-    const p = setup(); p.app.select({ rgb: [0, 255, 0], brightness: 50 }); await p.session.connect();
+    const p = setup();
+    p.app.select({ rgb: [0, 255, 0], brightness: 50 });
+    await p.session.connect();
     expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
-    p.app.power('on'); await vi.advanceTimersByTimeAsync(0);
-    expect(packetHex(p.characteristic.writeValueWithoutResponse.mock.calls[0][0])).toBe('69 96 06 01 01 00 FF 00 7F');
+    p.app.power('on');
+    await clock.tickAsync(0);
+    expect(packetHex(p.characteristic.writeValueWithoutResponse.mock.calls[0][0])).toBe(
+      '69 96 06 01 01 00 FF 00 7F',
+    );
   });
   it('prepares colours after Off and On uses the current unscaled RGB and brightness', async () => {
-    const p = setup(); await p.session.connect();
-    p.app.power('off'); await vi.advanceTimersByTimeAsync(0);
-    p.app.select({ rgb: [0, 0, 255], brightness: 25 }); await vi.advanceTimersByTimeAsync(500);
+    const p = setup();
+    await p.session.connect();
+    p.app.power('off');
+    await clock.tickAsync(0);
+    p.app.select({ rgb: [0, 0, 255], brightness: 25 });
+    await clock.tickAsync(500);
     expect(p.characteristic.writeValueWithoutResponse).toHaveBeenCalledTimes(1);
-    p.app.power('on'); await vi.advanceTimersByTimeAsync(0);
-    expect(packetHex(p.characteristic.writeValueWithoutResponse.mock.calls[1][0])).toBe('69 96 06 01 01 00 00 FF 3F');
+    p.app.power('on');
+    await clock.tickAsync(0);
+    expect(packetHex(p.characteristic.writeValueWithoutResponse.mock.calls[1][0])).toBe(
+      '69 96 06 01 01 00 00 FF 3F',
+    );
     expect(p.app.getSnapshot().message).toContain('On command sent');
   });
   it('draft slider changes never send commands before commit', async () => {
-    const p = setup(); await p.session.connect();
-    p.app.select({ ...DEFAULT_SETTINGS, brightness: 75 }, false); await vi.advanceTimersByTimeAsync(1000);
+    const p = setup();
+    await p.session.connect();
+    p.app.select({ ...DEFAULT_SETTINGS, brightness: 75 }, false);
+    await clock.tickAsync(1000);
     expect(p.characteristic.writeValueWithoutResponse).not.toHaveBeenCalled();
-    p.app.commit(); await vi.advanceTimersByTimeAsync(0);
-    expect(p.characteristic.writeValueWithoutResponse).toHaveBeenCalledOnce();
+    p.app.commit();
+    await clock.tickAsync(0);
+    expect(p.characteristic.writeValueWithoutResponse).toHaveBeenCalledTimes(1);
   });
   it('can add, rename, replace and delete a favourite without sending commands', async () => {
-    const p = setup(); await p.session.connect();
+    const p = setup();
+    await p.session.connect();
     expect(p.app.saveFavourite('Evening')).toBe(true);
     const id = p.app.getSnapshot().preferences.favourites[0].id;
     p.app.renameFavourite(id, 'Reading');

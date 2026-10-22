@@ -1,7 +1,11 @@
 import { useRef, type PointerEvent } from 'react';
 
 /** One submission on release; a cancelled or lost pointer leaves only a local draft. */
-export function useDirectControl(draft: (x: number, y: number, bounds: DOMRect) => void, commit: () => void, cancel: () => void) {
+export function useDirectControl(
+  draft: (x: number, y: number, bounds: DOMRect) => void,
+  commit: () => void,
+  cancel: () => void,
+) {
   const active = useRef<number | null>(null);
   const dirty = useRef(false);
   const update = (event: PointerEvent<HTMLDivElement>) => {
@@ -15,10 +19,15 @@ export function useDirectControl(draft: (x: number, y: number, bounds: DOMRect) 
     cancel();
   };
   const commitKeyboard = () => {
-    if (active.current === null && dirty.current) { dirty.current = false; commit(); }
+    if (active.current === null && dirty.current) {
+      dirty.current = false;
+      commit();
+    }
   };
   return {
-    markKeyboardDraft: () => { dirty.current = true; },
+    markKeyboardDraft: () => {
+      dirty.current = true;
+    },
     commitKeyboard,
     pointerHandlers: {
       onPointerDown: (event: PointerEvent<HTMLDivElement>) => {
@@ -30,13 +39,16 @@ export function useDirectControl(draft: (x: number, y: number, bounds: DOMRect) 
         dirty.current = true;
         update(event);
       },
-      onPointerMove: (event: PointerEvent<HTMLDivElement>) => { if (active.current === event.pointerId) update(event); },
+      onPointerMove: (event: PointerEvent<HTMLDivElement>) => {
+        if (active.current === event.pointerId) update(event);
+      },
       onPointerUp: (event: PointerEvent<HTMLDivElement>) => {
         if (active.current !== event.pointerId) return;
         update(event);
         active.current = null;
         dirty.current = false;
-        if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+        if (event.currentTarget.hasPointerCapture(event.pointerId))
+          event.currentTarget.releasePointerCapture(event.pointerId);
         commit();
       },
       onPointerCancel: cancelPointer,

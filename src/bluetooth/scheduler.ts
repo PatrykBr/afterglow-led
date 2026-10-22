@@ -2,7 +2,11 @@ import { encode, packetHex, type Command } from '../protocol/bojia';
 import { bounded, CancelledError, delay } from './async';
 import type { Diagnostics } from '../diagnostics';
 
-export type Outcome = { status: 'submitted' | 'cancelled' | 'uncertain' | 'failed'; command: Command; message?: string };
+export type Outcome = {
+  status: 'submitted' | 'cancelled' | 'uncertain' | 'failed';
+  command: Command;
+  message?: string;
+};
 type Job = { command: Command; resolve: (outcome: Outcome) => void };
 type Writer = (bytes: Uint8Array<ArrayBuffer>) => Promise<void>;
 
@@ -16,7 +20,11 @@ export class CommandScheduler {
   private rawWrite?: Promise<void>;
   lastActivity: number | null = null;
   private lastCompletion = -Infinity;
-  constructor(private diagnostics: Diagnostics, private fault: (message: string) => void, private changed: (pending: number) => void = () => {}) {}
+  constructor(
+    private diagnostics: Diagnostics,
+    private fault: (message: string) => void,
+    private changed: (pending: number) => void = () => {},
+  ) {}
 
   activate(writer: Writer) {
     this.stop();
@@ -28,19 +36,31 @@ export class CommandScheduler {
     this.generation++;
     this.writer = undefined;
     this.abort.abort();
-    this.queue.splice(0).forEach(job => job.resolve({ status: 'cancelled', command: job.command }));
+    this.queue
+      .splice(0)
+      .forEach((job) => job.resolve({ status: 'cancelled', command: job.command }));
     this.changed(0);
   }
 
   enqueue(command: Command): Promise<Outcome> {
-    if (!this.writer) return Promise.resolve({ status: 'failed', command, message: 'Connect before sending a command.' });
+    if (!this.writer)
+      return Promise.resolve({
+        status: 'failed',
+        command,
+        message: 'Connect before sending a command.',
+      });
     if (command.kind === 'off') this.cancelColours();
     const tail = this.queue.at(-1);
     if (command.kind === 'colour' && tail?.command.kind === 'colour') {
       this.queue.pop()!.resolve({ status: 'cancelled', command: tail.command });
     }
-    if (this.queue.length >= 40) return Promise.resolve({ status: 'failed', command, message: 'Too many pending commands. Wait for the current commands to finish.' });
-    return new Promise(resolve => {
+    if (this.queue.length >= 40)
+      return Promise.resolve({
+        status: 'failed',
+        command,
+        message: 'Too many pending commands. Wait for the current commands to finish.',
+      });
+    return new Promise((resolve) => {
       this.queue.push({ command, resolve });
       this.changed(this.queue.length + (this.activeRun === this.generation ? 1 : 0));
       void this.drain();
@@ -48,7 +68,7 @@ export class CommandScheduler {
   }
 
   cancelColours() {
-    this.queue = this.queue.filter(job => {
+    this.queue = this.queue.filter((job) => {
       if (job.command.kind !== 'colour') return true;
       job.resolve({ status: 'cancelled', command: job.command });
       return false;
@@ -67,8 +87,11 @@ export class CommandScheduler {
     const signal = this.abort.signal;
     while (generation === this.generation && this.queue.length) {
       // Leave a waiting job in the queue so Off can remove it during spacing.
-      try { await bounded(delay(Math.max(0, this.lastCompletion + 80 - Date.now())), 1000, signal); }
-      catch { break; }
+      try {
+        await bounded(delay(Math.max(0, this.lastCompletion + 80 - Date.now())), 1000, signal);
+      } catch {
+        break;
+      }
       if (generation !== this.generation || !this.writer) break;
       const job = this.queue.shift();
       if (!job) break;
@@ -81,7 +104,14 @@ export class CommandScheduler {
         const raw = Promise.resolve(this.writer(bytes));
         this.rawWrite = raw;
         // Track actual completion for a normal disconnect, including cancelled writes.
-        void raw.then(() => { this.lastActivity = Date.now(); }, () => { this.lastActivity = Date.now(); });
+        void raw.then(
+          () => {
+            this.lastActivity = Date.now();
+          },
+          () => {
+            this.lastActivity = Date.now();
+          },
+        );
         await bounded(raw, 8000, signal);
         if (generation !== this.generation) throw new CancelledError();
         this.lastCompletion = Date.now();
@@ -93,7 +123,9 @@ export class CommandScheduler {
         if (generation === this.generation) {
           this.diagnostics.add('write-uncertain', message);
           this.stop();
-          this.fault('The last command may have reached the strip. Reconnect and apply your setting when ready. No automatic retry was made.');
+          this.fault(
+            'The last command may have reached the strip. Reconnect and apply your setting when ready. No automatic retry was made.',
+          );
         }
         break;
       }

@@ -1,5 +1,7 @@
 # Lighting app research and alternatives
 
+Owner decision, version 1.5: keep the wheel only. The palette and dimmer comparisons below record the research process; they are no longer available layouts. Named quick colours remain under Edit colour, and saved combinations remain accessible on the main screen.
+
 Research date: 2026-10-22. These are established app patterns, not a usability study of this owner or a popularity ranking. Sources are the vendors' own guides and product pages. Some Hue regional screenshots show an older interface; use them as historical examples, not proof of the latest screen layout.
 
 | App | Observed pattern | Adaptation for one Bluetooth strip |

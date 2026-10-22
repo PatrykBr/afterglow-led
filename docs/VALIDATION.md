@@ -4,6 +4,16 @@ Date: 2026-10-21.
 
 ## Software checks
 
+### Wheel selection and Bun migration, version 1.5.0, 2026-10-22
+
+The owner selected the wheel. The palette, dimmer and layout chooser are removed. Old layout links open the wheel; saved lighting preferences keep their original schema. Named quick colours moved into Edit colour beside the existing precision controls.
+
+On Windows, stable Bun 1.4.4 installs the committed bun.lock with `bun ci`, serves development HTML with HMR, checks TypeScript, formats source, runs tests with coverage and bundles the static production assets. Vite, Vitest, the separate TypeScript package and the npm lockfile are removed. All 78 tests pass with 184 assertions; formatting, type checking and production build pass. Bun audit reports no vulnerabilities among the 15 checked packages. Async clock tests use @sinonjs/fake-timers under Bun because its native timer API does not yet provide async advancement. Coverage is 95.87% of lines in imported tested modules, not a measurement of the entire UI.
+
+A development App.tsx hot update retained one simulated device selection, the active connection and zero writes. The production preview loaded its hashed JavaScript, CSS and icon with HTTP 200 and correct content types. A legacy palette query still displayed the wheel. With a simulated peripheral, Connect produced one chooser and no writes; wheel and quick brightness actions reused the connection. The Ocean quick colour updated Hex and RGB fields and submitted its expected scaled frame. Off submitted `69 96 02 01 00`; choosing Ember and changing brightness afterward submitted nothing. On then submitted `69 96 06 01 01 FF 68 2F 7F`, the latest unscaled Ember colour at 50%, without another chooser. A synthetic downward sheet swipe dismissed without a write. Reload restored the selection while disconnected with power unknown.
+
+The production main-screen screenshot was reviewed at 390 by 844. At both 390 and 320 pixels wide there was no horizontal overflow; tested main buttons and sliders had at least 44-pixel hit regions. These are desktop browser and simulated transport checks. The Bun-built release still needs actual iPhone/Bluefy and physical strip verification, particularly Off/On. Earlier physical evidence below is unchanged.
+
 ### Three researched control layouts, version 1.4.0, 2026-10-22
 
 The research and tradeoffs are documented in UX_RESEARCH.md with primary sources from Apple, Hue, LIFX and Nanoleaf. The three alternatives are working app layouts, not static mockups. They share the existing controller and Bluetooth session. A separate validated layout preference leaves stored lighting preferences unchanged.

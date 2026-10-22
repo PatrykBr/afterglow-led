@@ -4,15 +4,32 @@ import { Diagnostics } from './diagnostics';
 import { PreferenceStorage } from './persistence/preferences';
 
 const diagnostics = new Diagnostics();
-const session = new BluetoothSession(() => window.isSecureContext ? navigator.bluetooth : undefined, diagnostics);
-export const controller = new LightingController(session, new PreferenceStorage(() => window.localStorage), diagnostics);
+const session = new BluetoothSession(
+  () => (window.isSecureContext ? navigator.bluetooth : undefined),
+  diagnostics,
+);
+export const controller = new LightingController(
+  session,
+  new PreferenceStorage(() => window.localStorage),
+  diagnostics,
+);
 
-document.addEventListener('visibilitychange', () => {
+const visibilityChanged = () => {
   if (document.visibilityState === 'visible') {
     session.resume();
-    if (session.getSnapshot().state === 'connected') controller.notify('Page active again. Adjust a control or tap On if needed.');
+    if (session.getSnapshot().state === 'connected')
+      controller.notify('Page active again. Adjust a control or tap On if needed.');
   }
-});
-window.addEventListener('pagehide', () => { void session.disconnect(); });
+};
+const pageHidden = () => {
+  void session.disconnect();
+};
+document.addEventListener('visibilitychange', visibilityChanged);
+window.addEventListener('pagehide', pageHidden);
 // A module replacement releases the old singleton; rendering never owns Bluetooth.
-if (import.meta.hot) import.meta.hot.dispose(() => { void session.disconnect(); });
+if (import.meta.hot)
+  import.meta.hot.dispose(() => {
+    document.removeEventListener('visibilitychange', visibilityChanged);
+    window.removeEventListener('pagehide', pageHidden);
+    void session.disconnect();
+  });

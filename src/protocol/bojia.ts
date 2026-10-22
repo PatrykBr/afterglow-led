@@ -10,7 +10,10 @@ export function encode(command: Command): Uint8Array<ArrayBuffer> {
   const factor = brightness / 100;
   const scalar = Math.floor(255 * factor);
   if (command.kind === 'on') return new Uint8Array([0x69, 0x96, 6, 1, 1, ...rgb, scalar]);
-  return new Uint8Array([0x69, 0x96, 5, 2, ...rgb.map(v => Math.floor(v * factor)), scalar]);
+  return new Uint8Array([0x69, 0x96, 5, 2, ...rgb.map((v) => Math.floor(v * factor)), scalar]);
 }
 
-export const packetHex = (bytes: Uint8Array) => Array.from(bytes, v => v.toString(16).padStart(2, '0')).join(' ').toUpperCase();
+export const packetHex = (bytes: Uint8Array) =>
+  Array.from(bytes, (v) => v.toString(16).padStart(2, '0'))
+    .join(' ')
+    .toUpperCase();

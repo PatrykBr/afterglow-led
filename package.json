@@ -15,8 +15,8 @@
     "test": "bun test",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
-    "format": "bun fmt src tests scripts index.html package.json tsconfig.json bunfig.toml",
-    "format:check": "bun fmt --check src tests scripts index.html package.json tsconfig.json bunfig.toml",
+    "format": "bun fmt src tests scripts index.html package.json tsconfig.json bunfig.toml vercel.json",
+    "format:check": "bun fmt --check src tests scripts index.html package.json tsconfig.json bunfig.toml vercel.json",
     "check": "bun run format:check && bun run typecheck && bun test --coverage && bun scripts/build.ts"
   },
   "dependencies": {

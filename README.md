@@ -52,7 +52,7 @@ See [architecture decisions](docs/ARCHITECTURE.md), [protocol evidence](PROTOCOL
 
 ## Maintenance and hosting
 
-The app is static. Any HTTPS host that serves every file in `dist` at the website root can host it. Bun's hashed JavaScript, CSS and icon files sit beside `index.html`. No API keys or production environment variables are required. The Sites manifest in `.openai/hosting.json` identifies this app's independent deployment. Source and deployment publication use the connected Sites workflow, described in the deployment record.
+The app is static. Vercel serves the built `dist` directory over HTTPS, with source in the private [GitHub repository](https://github.com/PatrykBr/afterglow-led). The tracked `vercel.json` sets installation, validation/build, output and Bluetooth response headers. No API keys or production environment variables are required by the app. See [the deployment record](docs/DEPLOYMENT.md) for the live URL and publication workflow.
 
 After a change, use `bun install` if dependency declarations changed, then commit `bun.lock`. For an unchanged manifest use `bun ci`. Run `bun run check` and publish the complete `dist` directory from the tested source commit. Keep HTML fresh and cache content-hashed assets normally. The app has no service worker or persistent offline cache to hide updates. `bun run test:watch`, `bun run test:coverage`, `bun run typecheck` and `bun run format` are available separately.
 

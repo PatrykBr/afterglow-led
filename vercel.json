@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "bun ci",
-  "buildCommand": "bun run check",
+  "installCommand": "curl -fsSL https://bun.com/install | bash -s \"bun-v1.4.4\" && export PATH=\"$HOME/.bun/bin:$PATH\" && bun ci",
+  "buildCommand": "export PATH=\"$HOME/.bun/bin:$PATH\" && bun run check",
   "outputDirectory": "dist",
   "headers": [
     {

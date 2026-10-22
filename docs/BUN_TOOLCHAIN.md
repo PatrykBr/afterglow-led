@@ -29,6 +29,8 @@ The connected Sites publishing helpers are host tooling and may use the Node run
 
 Browser targeting is not a guarantee of a particular old Safari syntax level. The built production page must still be checked on the actual iPhone/Bluefy after this migration. A modern bundler cannot add missing Web Bluetooth access.
 
+Vercel's build image initially supplied Bun 1.4.1, which lacked `bun fmt`. The `vercel.json` install command uses Bun's official installer with `bun-v1.4.4`; both install and build commands prepend that installation to PATH. Local development commands still run the installed Bun directly. No Node.js server is deployed.
+
 ## HMR ownership
 
 The React root is stored in `import.meta.hot.data` through direct API access, as required by Bun's HMR transform. Module replacement removes old page lifecycle listeners and requests a normal disconnect of the old session. Component refreshes do not request another device or submit lighting commands. No uncertain write is replayed after an update.

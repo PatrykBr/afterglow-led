@@ -61,6 +61,7 @@ export default function App() {
         <div className="light-heading">
           <h2>LED strip</h2>
         </div>
+        <PowerControls app={controller} state={state} />
         <section className="colour-section" aria-labelledby="colour-title">
           <div className="section-heading">
             <h2 id="colour-title">Colour</h2>
@@ -72,7 +73,6 @@ export default function App() {
           <ColourWheel {...colourProps} />
         </section>
         <Brightness app={controller} settings={selected} />
-        <PowerControls app={controller} state={state} />
         <SavedShortcuts
           app={controller}
           favourites={favourites}

@@ -111,7 +111,7 @@ export function MoreView({
         </div>
       </details>
       <p className="about">
-        Afterglow <span>Version 1.5.0</span>
+        Afterglow <span>Version 1.5.1</span>
       </p>
       <p className="fine-print">
         Settings stay in this browser. No account, cloud control or background schedules.

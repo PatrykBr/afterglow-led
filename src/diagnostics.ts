@@ -8,7 +8,7 @@ export class Diagnostics {
   export() {
     return JSON.stringify(
       {
-        app: 'Afterglow 1.5.0',
+        app: 'Afterglow 1.5.1',
         userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'test',
         note: 'Commands are submitted without device acknowledgement. No device identifiers are recorded.',
         entries: this.entries,

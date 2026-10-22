@@ -76,11 +76,12 @@ export function PowerControls({
             : `Last request: ${state.requestedPower === 'on' ? 'On' : 'Off'}`}
         </small>
       </div>
-      <div className="power-buttons">
+      <div className="power-buttons" data-requested={state.requestedPower}>
         <button
           disabled={!connected}
           className={state.requestedPower === 'on' ? 'requested' : ''}
           aria-label="Turn on"
+          aria-pressed={state.requestedPower === 'on'}
           onClick={() => app.power('on')}
         >
           On
@@ -89,6 +90,7 @@ export function PowerControls({
           disabled={!connected}
           className={state.requestedPower === 'off' ? 'requested' : ''}
           aria-label="Turn off"
+          aria-pressed={state.requestedPower === 'off'}
           onClick={() => app.power('off')}
         >
           Off

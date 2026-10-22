@@ -14,6 +14,8 @@ The fresh hosted source repository is `https://git.chatgpt-team.site/77e8427c-4b
 
 ## Publish an update from Windows
 
+Version 1.5.1 moves power above the colour wheel and adds a sliding highlight between On and Off. Open `https://afterglow-led.gardenmelon35.chatgpt.site/?v=1.5.1` in Bluefy. This uses the same origin and saved preferences.
+
 Version 1.5.0 keeps the owner's chosen colour wheel as the only layout and uses Bun 1.4.4 for dependency management, development, production bundling, type checking, formatting and tests. Open `https://afterglow-led.gardenmelon35.chatgpt.site/?v=1.5.0` in Bluefy. Old layout query parameters are ignored; the comparison links below are historical. The HTTPS origin and stored lighting preferences are unchanged. See [BUN_TOOLCHAIN.md](BUN_TOOLCHAIN.md) for the tooling boundaries and Windows commands.
 
 Version 1.4.0 adds three working layouts informed by research into Apple Home, Hue, LIFX and Nanoleaf. Open `https://afterglow-led.gardenmelon35.chatgpt.site/?v=1.4.0&layout=wheel`, `...?v=1.4.0&layout=palette` or `...?v=1.4.0&layout=dimmer`. The in-app layout chooser switches without reloading or changing the lights. Direct links reload the page and may require Bluetooth selection again. All layouts use this same public HTTPS origin, local lighting preferences and session implementation.

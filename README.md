@@ -35,6 +35,8 @@ There are no enclosing cards, Apply action or bottom navigation. Saved lights an
 
 On and Off are explicit command requests. The strip does not acknowledge its physical power state. After requesting Off, edits prepare the next On selection. A reload restores settings and favourites, with power treated as unknown; it sends nothing.
 
+Power sits above the colour wheel. The highlight slides between On and Off to show your last request, and stays unselected on opening. Reduced-motion preferences disable the animation.
+
 ## Source layout
 
 - `src/domain/lighting.ts` validates settings and converts colour representations.

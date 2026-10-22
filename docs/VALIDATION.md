@@ -4,6 +4,12 @@ Date: 2026-10-21.
 
 ## Software checks
 
+### Top power controls and sliding highlight, version 1.5.1, 2026-10-22
+
+Power now precedes colour in the DOM and visual order. The production preview was reviewed at 390 by 844; at 320 by 640 there was no horizontal overflow and power targets measured 66 by 48 pixels. Neither button is selected before a request. A browser sample measured the highlight's horizontal translation at 0 pixels before Off, 48.87 pixels during the transition and 78 pixels afterward, with a configured 280 ms slide. The existing reduced-motion rule now also covers pseudo-elements. Native buttons retain disabled behaviour, keyboard focus and aria-pressed for the last request.
+
+With a simulated peripheral, Connect sent no commands and used one chooser. On followed by Off produced their full expected frames. Brightness editing after Off added no write; the next On included the latest 25% brightness scalar. All 78 tests, formatting, type checking and the Bun production build pass. Protocol and session code are unchanged. This is software verification; physical iPhone/Bluefy results remain separate.
+
 ### Wheel selection and Bun migration, version 1.5.0, 2026-10-22
 
 The owner selected the wheel. The palette, dimmer and layout chooser are removed. Old layout links open the wheel; saved lighting preferences keep their original schema. Named quick colours moved into Edit colour beside the existing precision controls.

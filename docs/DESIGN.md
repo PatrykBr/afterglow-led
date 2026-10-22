@@ -1,5 +1,7 @@
 # Design direction, version 1.5
 
+Version 1.5.1 moves power directly below the LED strip heading, above colour. On and Off share a quiet segmented surface with a single pearl highlight that slides horizontally in 280 ms. The highlight represents the last requested command and remains hidden until a request this visit. Keyboard focus remains visible, each segment has a 48-pixel height, and reduced motion disables the transition, including its pseudo-element. The existing graphite, pearl and system typography remain unchanged.
+
 The owner chose the colour wheel. It is now the sole layout: one large hue/saturation wheel, brightness with quick levels, explicit power actions and saved colours. The layout chooser, palette layout and dimmer layout are removed. Exact RGB, separate hue/saturation controls and named quick colours remain in Edit colour. No Apply button, bottom navigation or enclosing cards are added. Existing settings and favourites keep their storage format.
 
 ## Previous comparison, version 1.4
